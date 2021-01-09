@@ -5,7 +5,7 @@
 |black.eps| 仮置き用の画像 |
 |nitocs.cls| スタイルファイル。テンプレートを、文字コード変換しただけ。|
 |thesis.pdf| 生成したやつ |
-|thesis.tex| 論文本編 |
+|**thesis.tex**| **論文本編** |
 
 # メモ
 - WSL2(Ubuntu 20.10)
