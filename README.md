@@ -8,6 +8,7 @@
 |**thesis.tex**| **論文本編** |
 
 # メモ
+- 変更テスト
 - WSL2(Ubuntu 20.10)
 - TeX Liveをフルインストール
 - VSCode(LaTeX Workshop)を使用
