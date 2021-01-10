@@ -11,7 +11,8 @@
 - WSL2(Ubuntu 20.10)
 - TeX Liveをフルインストール
 - VSCode(LaTeX Workshop)を使用
-- ptex2pdfでコンパイル成功。他はエラーを吐いた。  
+- ptex2pdfでコンパイル成功。他はエラーを吐いた。 
+- Better Commentsプラグインを使用。コメントにTODOとか!とか?とか書いてあるのは、これを使うため。
 
 以下の内容は[[LaTex]VSCodeとWSLで作るLaTex環境構築の備忘録 - Qiita](https://qiita.com/uoyuki/items/c0b3feeb80f9a2699759#%E3%83%84%E3%83%BC%E3%83%AB%E3%81%AE%E8%A8%AD%E5%AE%9A)を参考にした。
 ## latex-tools.sh
