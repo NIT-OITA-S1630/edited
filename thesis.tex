@@ -207,7 +207,7 @@
                 %! 目標は，後で他の人が同じ実験をできるように説明する，です
         本研究で検討したシステムでは，盤面を含むグレースケール画像から盤面の切り抜きを行い，ノイズ処理を行った後に，輝度値をもとに石の検出を行う．
         システムの流れを図\ref{flow}に示す．
-        これらの処理には，オープンソースのコンピュータビジョンライブラリであるOpenCV\ref{opencv}を利用した．
+        これらの処理には，オープンソースのコンピュータビジョンライブラリであるOpenCV\cite{opencv}を利用した．
             % 図番号が4.0.1になってる．0はマズい？
             %! 図の番号付け，執筆の最後でいいので整えてください．4.0.1 -> 4.1.2 って変なので．
         \begin{figure} % フロー図
@@ -219,10 +219,11 @@
         \end{figure}
 
         \subsection{盤面の切り抜き}
+            \label{perspective_transform}
             はじめに，getPerspectiveTransform()関数を用いて，盤面を含む画像から盤面の四隅の頂点座標と，正方形の頂点座標から，変換行列を生成する．
             次に，warpPerspective()関数を用いて，画像と変換行列を指定することで射影変換を行い，盤面部分を正方形に変換する．
             
-            変換前の図を図\ref{cornerImg}，変換後の図を図\ref{boardImg}に示す．
+            変換前の図に、正方形に変換する四角形を重ねたものを図\ref{cornerImg}に，変換後の図を図\ref{boardImg}に示す．
             \begin{figure} % 射影変換前の画像
                 \begin{center}
                 \includegraphics[width=72mm,height=35mm]{cornerImg.jpg} 
@@ -239,7 +240,9 @@
             \end{figure}
 
         \subsection{ノイズ除去}
-            4.1で生成した画像(図\ref{boardImg})に対し，碁盤上の線を消すために，メディアンフィルタを用いてノイズ処理を行う．処理結果を図\ref{noiseReduced}に示す．
+            \label{reduceNoise}
+            \ref{perspective_transform}章で生成した画像(図\ref{boardImg})に対し，碁盤上の線を消すために，メディアンフィルタ処理を行うmedianBlur()関数を適用する．
+            処理結果を図\ref{noiseReduced}に示す．
             \begin{figure} % ノイズ除去後の盤面
                 \begin{center}
                 \includegraphics[width=50mm,height=50mm]{noiseReducedImg.jpg} 
@@ -250,7 +253,8 @@
 
         \subsection{領域の付与}
             \label{area}
-            4.2(図\ref{noiseReduced})に対し，等間隔に$19\times19$個の小さな領域を付与する．領域を可視化した図を図\ref{boardWithArea}に示す．
+            \ref{reduceNoise}章でノイズ処理を施した画像(図\ref{noiseReduced})に対し，石が配置可能な座標の画素の情報を得るために，等間隔に$19\times19$個の小さな領域を付与する．
+            領域を可視化した図を図\ref{boardWithArea}に示す．
             \begin{figure} % 領域を可視化した図
                 \begin{center}
                 \includegraphics[width=50mm,height=50mm]{boardWithAreaImg.jpg} 
@@ -260,7 +264,7 @@
             \end{figure}
 
         \subsection{識別} \label{identify}  
-            \ref{area}で与えた領域内の輝度値の平均（0～255）を取得し，設定した閾値をもとに，領域を「黒石がある」「白石がある」「何もない」の3状態に分類する．
+            \ref{area}章で与えた領域から，領域内の輝度値の平均（0～255）を取得し，設定した閾値をもとに領域の座標を「黒石がある」「白石がある」「何もない」の3状態に分類する．
             
             閾値の決定については，\ref{threshold}章で述べる．
 
@@ -270,10 +274,10 @@
                 %? （逆に言うと，何を明らかにすれば碁石の位置認識を実現できた！と言える？）
         この章では，システムの有効性を検証するため，実際に盤面を含む画像を使ってシステムを適用し，結果を考察する．
 
-        \subsection{閾値の決定} \label{threshold}
-            今回の実験で用いる閾値は，この盤面画像（図\ref{DSC0087}）に対し，さまざまな閾値に応じた感度と特異度をもとに，最適な閾値を決定した．
-            黒色のしきい値に対する黒石の感度と特異度を図\ref{Black_TPF}，図\ref{Black_TNF}に，
-            白色のしきい値に対する白石の感度と特異度をそれぞれ図\ref{White_TPF}，図\ref{White_TNF}に示す．
+        \subsection{しきい値の決定} \label{threshold}
+            今回の実験で用いるしきい値は，この盤面画像（図\ref{DSC0087}）に対し，さまざまな閾値に応じた感度と特異度をもとに，最適な閾値を決定した．
+            黒色のしきい値に対する黒石の感度と特異度のグラフを図\ref{Black_TPF}，図\ref{Black_TNF}に，
+            白色のしきい値に対する白石の感度と特異度のグラフをそれぞれ図\ref{White_TPF}，図\ref{White_TNF}に示す．
 
             図\ref{Black_TPF}と図\ref{Black_TNF}より，黒石のしきい値は52～64の範囲で感度100\%，特異度100\%を記録したため，今回の実験ではその範囲の中央値である58を使用した．
 
