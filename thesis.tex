@@ -339,13 +339,84 @@
                 \end{center}
             \end{figure}
 
-        \subsection{事例1}
-            正しく取得できた場合について説明
+        \subsection{実際の識別結果} % 完全な成功例．DSC_0041
+            \subsubsection{事例1}
+                この盤面画像（図\ref{ex1}）に対し，システムを適用した結果，全ての碁石を正確に識別できた．
+                \begin{figure} % 事例1_盤面
+                    \begin{center}
+                    \includegraphics[width=60mm,height=60mm]{DSC_0041/boardImg.jpg} 
+                    \caption{事例1の盤面}
+                    \label{ex1}
+                    \end{center}
+                \end{figure}
 
-            画像を多用してページ数を稼ぎたいところだけど，ただでさえ画像が多いからこれ以上増やすと見栄えが悲惨なことになりそう……
+            \subsubsection{事例2} % 位置ズレによる失敗．DSC_0099．
+                この盤面画像（図\ref{ex2}）に対し，システムを適用した．
+                識別結果に誤りがあった部分にマークを付け，その周囲をトリミングしたものを図\ref{ex2_error}に示す．
 
-        \subsection{事例2}
-            異常が多発する（反射・配置ズレが多い）場合について説明
+                図\ref{noiseReduced}と同様に，輝度値の平均を取得する領域を可視化すると，石が配置されているであろう領域からはみ出ているのが分かる．
+                図\ref{ex2_error}の範囲に対し，領域を可視化した図を図\ref{ex2_error_area}に示す．
+                このことから，石が正しく盤面上の交点に配置されていない場合，システムは正常に識別できないと考える．
+                \begin{figure} % 事例2_盤面
+                    \begin{center}
+                    \includegraphics[width=60mm,height=60mm]{DSC_0099/boardImg.jpg} 
+                    \caption{事例2の盤面}
+                    \label{ex2}
+                    \end{center}
+                \end{figure}
+
+                \begin{figure} % 事例2_エラー部分の拡大
+                    \begin{center}
+                    \includegraphics[width=40mm,height=40mm]{DSC_0099/TRIM_resultCompare.jpg} 
+                    \caption{事例2の誤り部分}
+                    \label{ex2_error}
+                    \end{center}
+                \end{figure}
+
+                \begin{figure} % 事例2_エラー部分の拡大
+                    \begin{center}
+                    \includegraphics[width=40mm,height=40mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
+                    \caption{事例2誤り部分の領域を可視化した図}
+                    \label{ex2_error_area}
+                    \end{center}
+                \end{figure}
+
+            \subsubsection{事例3} % 反射による失敗．DSC_0098．
+                この盤面画像（図\ref{ex3}）に対し，システムを適用した．
+                識別結果に誤りがあった部分にマークを付け，その一部をトリミングしたものを図\ref{ex3_error}に示す．
+
+                図\ref{noiseReduced}と同様に，輝度値の平均を取得する領域を可視化すると，石が配置されているであろう領域からはみ出ているのが分かる．
+                図\ref{ex3_error}の範囲に対し，領域を可視化した図を図\ref{ex3_error_area}に示す．
+                このことから，石が正しく盤面上の交点に配置されていない場合，システムは正常に識別できないと考える．
+                \begin{figure} % 事例3_盤面
+                    \begin{center}
+                    \includegraphics[width=60mm,height=60mm]{DSC_0098/boardImg.jpg} 
+                    \caption{事例3の盤面}
+                    \label{ex3}
+                    \end{center}
+                \end{figure}
+
+                \begin{figure} % 事例3_エラー部分の拡大
+                    \begin{center}
+                    \includegraphics[width=50mm,height=50mm]{DSC_0098/TRIM_resultCompare.jpg} 
+                    \caption{事例3の誤り部分の一部}
+                    \label{ex3_error}
+                    \end{center}
+                \end{figure}
+
+                    %TODO: inRange()で，白のしきい値が拾った部分の二値画像を作る
+                \begin{figure} % 事例3_エラー部分の拡大
+                    \begin{center}
+                    \includegraphics[width=40mm,height=40mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
+                    \caption{事例3誤り部分の領域を可視化した図}
+                    \label{ex3_error_area}
+                    \end{center}
+                \end{figure}
+
+
+
+
+
 
     \section{結言}\label{sec:Item} % 結言
         本文
