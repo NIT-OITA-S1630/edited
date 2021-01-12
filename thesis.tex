@@ -15,7 +15,7 @@
 \graphicspath{{./IMG/}} % 画像指定用のパス
 
 \renewcommand{\theequation}{\arabic{section}.\arabic{subsection}.\arabic{equation}}
-\renewcommand{\thefigure}{\arabic{section}-\arabic{figure}}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
 \renewcommand{\thetable}{\arabic{section}.\arabic{subsection}.\arabic{table}}
 \makeatletter
 \@addtoreset{equation}{section}
@@ -91,9 +91,10 @@
     \section{先行研究} % セクション．先行研究
         棋譜の自動生成に関する既存研究に着目すると，1手前の着手と比較することで碁石の配置を検出する研究がある．
         芝らは，着手ごとのグレイ画像と1手前のグレイ画像との，碁盤領域内の差分をとることで，碁盤上の碁石の位置（碁石座標）を検出する手法を提案した\cite{PilotStudy}．
-        
             %TODO「なんでこの方法でやろうと思ったのか書けるといいね．」
-        本研究では，直前の着手の情報を使用せず，1つの着手の画像だけで碁石の位置を検出することを目的とする．
+        しかし，この手法では，途中から対局を記録しようとした時に，そのターンを記録できない問題が存在する．
+
+        そこで本研究では，記録しようとした時点のターンから記録できるように，直前の着手の情報を使用せず，1つの着手の画像だけで碁石の位置を検出することを目的とする．
 
     \section{理論} % セクション．理論
     \label{config}
@@ -228,6 +229,8 @@
         検査で検出したい信号や疾患を有するもののうち，検査が正しく陽性と判断したものの割合を指す．
         真陽性率（TPF: True Positive Fraction）とも呼ぶ．
 
+        感度は
+
         \subsection{特異度} % 真陰性率
         検査で検出したい信号や疾患を有さないもののうち，検査が正しく陰性と判断したものの割合を指す．
         真陰性率（TNF: True Negative Fraction）とも呼ぶ．
@@ -237,11 +240,8 @@
                 %! 目標は，後で他の人が同じ実験をできるように説明する，です
         本研究で検討したシステムでは，盤面を含む画像から，碁石の位置を識別することを目的とする．
 
-        %? ライブラリの比較，OpenCVを使った理由？　参考文献を探す
         実際には，盤面を含む画像から盤面を切り抜き，碁石上の線を黒石と誤検知しないようノイズ処理を施した後に$19\times19$の領域を付与する．その後，付与した領域内における輝度値の平均を計算し，黒石・白石のしきい値とを比較，結果をもとに石の識別を行う．
         システムの流れを図\ref{flow}に示す．
-            %? 図番号が4.0.1になってる．0はマズい？
-            %! 図の番号付け，執筆の最後でいいので整えてください．4.0.1 -> 4.1.2 って変なので．
         \begin{figure}[tb] % フロー図
             \begin{center}
             \includegraphics[clip,width=90mm]{flow.jpg} 
@@ -250,7 +250,12 @@
             \end{center}
         \end{figure}
 
+        %? ライブラリの比較，OpenCVを使った理由？　参考文献を探す
+        システム中で行う処理には，プログラミング言語であるPythonと，オープンソースのコンピュータビジョン用ライブラリであるOpenCVを用いる．
+        途中で行う射影変換の処理には，異なる画像処理ライブラリであるPillowやscikit-imageを用いて実装を試みると複雑な計算を実装する必要があるが，OpenCVであればこれを計算する関数が用意されており，処理を簡単に実装できるといった理由からOpenCVを選択した．
+
         \subsection{切り抜き}
+        \label{boardCut}
             盤面を含む画像から，盤面以外の不要な部分を除外する．
             盤面画像の生成には，碁盤の頂点座標と，変換後の四角形の頂点座標を指定して変換行列を生成し，その行列を用いて射影変換を行う．変換前と変換後の図を図\ref{cornerImg}，図\ref{boardImg}に示す．
             \begin{figure}[tb] % 射影変換前の画像
@@ -272,7 +277,7 @@
         \label{noiseReduce}
             後述する識別の方法では，盤面上の線が交差する点を誤って黒石と識別してしまうことがある．
             これを減らすため，ノイズ処理を適用することで，盤面上の線をある程度無視できるようにする． 
-            4.1で生成した画像(図\ref{boardImg})に対し，フィルタを用いてノイズ処理を行う．
+            \ref{boardCut}小節で生成した画像(図\ref{boardImg})に対し，フィルタを用いてノイズ処理を行う．
             フィルタには，輪郭部分がぼやけにくいといった特徴を持つメディアンフィルタを使用する．
             処理結果を図\ref{noiseReducedImg}に示す．
             \begin{figure}[tb] % ノイズ除去後の盤面
@@ -285,9 +290,8 @@
 
         \subsection{領域の付与}
             \label{area}
-            
             後述する識別の際に，情報を取得するための，$19\times19$個の小さな領域を付与する．
-            \ref{noiseReduce}章で生成した図(図\ref{noiseReducedImg})に対し，領域を可視化した図を図\ref{boardWithArea}に示す．
+            \ref{noiseReduce}小節で生成した図(図\ref{noiseReducedImg})に対し，領域を可視化した図を図\ref{boardWithArea}に示す．
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
                 \includegraphics[clip,width=80mm]{boardWithAreaImg.jpg} 
@@ -297,7 +301,7 @@
             \end{figure}
 
         \subsection{識別} \label{identify}  
-            \ref{area}章で与えた領域内における輝度値の平均（0～255）を取得し，設定したしきい値をもとに，各領域を
+            \ref{area}小節で与えた領域内における輝度値の平均（0～255）を取得し，白黒それぞれのしきい値をもとに，各領域を
             \begin{itemize} % 3種類
                 \item 平均値が黒石のしきい値より小さい ＝ 「黒石がある」
                 \item 平均値が白石のしきい値より大きい ＝ 「白石がある」
@@ -321,13 +325,21 @@
         この章では，システムの有効性を検証するため，実際に盤面を含む画像を使ってシステムを適用し，結果を考察する．
 
         \subsection{しきい値の決定} \label{threshold}
-            今回の実験で用いるしきい値は，2枚の盤面画像（図\ref{DSC0087}，図\ref{DSC0100}）に対し，さまざまなしきい値に応じた感度と特異度をもとに，最適なしきい値を決定した．
-            図\ref{DSC0087}，図\ref{DSC0100}における黒石の感度と特異度をそれぞれ図\ref{Case1Black}と図\ref{Case2Black}に，
-            白石の感度と特異度をそれぞれ図\ref{Case1White}と図\ref{Case2White}に示す．
+            今回の実験で用いるしきい値は，2枚の盤面画像（図\ref{DSC0087}，図\ref{DSC0100}）に対し，白黒2色の識別におけるさまざまなしきい値に応じた以下の2項目によって，最適な値を決定した．
+            \begin{itemize}
+                \item 白石を，白石と識別した割合（白石の感度）
+                \item 黒石を，黒石と識別した割合（黒石の感度）
+                \item 白石でないものを，正しく白石でないと識別した割合（白石の特異度）
+                \item 黒石でないものを，正しく黒石でないと識別した割合（黒石の特異度）
+            \end{itemize}
+
+            図\ref{DSC0087}，図\ref{DSC0100}における白石の感度と特異度をそれぞれ図\ref{Case1White}と図\ref{Case2White}に，
+            黒石の感度と特異度をそれぞれ図\ref{Case1Black}と図\ref{Case2Black}に示す．
+
+            図\ref{Case1White}，図\ref{Case2White}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対して，白石のしきい値は156～160の範囲で感度100\%，特異度100\%を記録したため，今回の実験ではその範囲の中央値である158を使用した．
 
             図\ref{Case1Black}と図\ref{Case2Black}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対して，黒石のしきい値は52で感度100\%，特異度100\%を記録したため，今回の実験では52を使用した．
 
-            図\ref{Case1White}，図\ref{Case2White}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対して，白石のしきい値は156～160の範囲で感度100\%，特異度100\%を記録したため，今回の実験ではその範囲の中央値である158を使用した．
             \begin{figure}[tb] % DSC_0087
                 \begin{center}
                 \includegraphics[clip,width=80mm]{DSC_0087/boardImg.jpg} 
@@ -341,22 +353,6 @@
                 \includegraphics[clip,width=80mm]{DSC_0100/boardImg.jpg} 
                 \caption{しきい値の決定に用いた盤面2}
                 \label{DSC0100}
-                \end{center}
-            \end{figure}
-
-            \begin{figure}[tb] % 黒石の感度・特異度1
-                \begin{center}
-                \includegraphics[clip,width=80mm]{Case1_Black_TPF_TNF.eps} 
-                \caption{黒石の感度・特異度1}
-                \label{Case1Black}
-                \end{center}
-            \end{figure}
-
-            \begin{figure}[tb] % 黒石の感度・特異度2
-                \begin{center}
-                \includegraphics[clip,width=80mm]{Case2_Black_TPF_TNF.eps} 
-                \caption{黒石の感度・特異度2}
-                \label{Case2Black}
                 \end{center}
             \end{figure}
 
@@ -376,7 +372,27 @@
                 \end{center}
             \end{figure}
 
+            \begin{figure}[tb] % 黒石の感度・特異度1
+                \begin{center}
+                \includegraphics[clip,width=80mm]{Case1_Black_TPF_TNF.eps} 
+                \caption{黒石の感度・特異度1}
+                \label{Case1Black}
+                \end{center}
+            \end{figure}
+
+            \begin{figure}[tb] % 黒石の感度・特異度2
+                \begin{center}
+                \includegraphics[clip,width=80mm]{Case2_Black_TPF_TNF.eps} 
+                \caption{黒石の感度・特異度2}
+                \label{Case2Black}
+                \end{center}
+            \end{figure}
+
         \subsection{実際の識別結果} % 完全な成功例．DSC_0041
+            この小節では，3件の画像に対してシステムを適用した結果と，その考察を述べる．
+            %? この下の文，冗長な気がする
+            具体的には，すべて正常に識別できた場合，石の位置がずれていることで誤った識別をした場合，反射光を白石と誤った場合について述べる．
+
             \subsubsection{事例1}
                 この盤面画像（図\ref{ex1}）に対し，システムを適用した結果，全ての碁石を正確に識別できた．
                 \begin{figure}[tb] % 事例1_盤面
@@ -391,7 +407,7 @@
                 この盤面画像（図\ref{ex2}）に対し，システムを適用した．
                 識別結果に誤りがあった部分にマークを付け，その周囲をトリミングしたものを図\ref{ex2_error}に示す．
 
-                図\ref{noiseReduced}と同様に，輝度値の平均を取得する領域を可視化すると，中央の石の大部分が領域からはみ出ているのが分かる．
+                図\ref{noiseReducedImg}と同様に，輝度値の平均を取得する領域を可視化すると，中央の石の大部分が領域からはみ出ているのが分かる．
                 このことから，石が正しく盤面の交点上に配置されていない場合，システムは正常に石を識別できないと考える．
                 図\ref{ex2_error}の範囲に対し，領域を可視化した図を図\ref{ex2_error_area}に示す．
                 
@@ -450,10 +466,21 @@
                     \end{center}
                 \end{figure}
 
-    \section{結言}\label{sec:Item} % 結言
-        本文
+    \section{改善案}
+        グレースケールじゃなくRGBで識別を行うか，DRC処理を使うと反射光を白石と誤ることを減らせるかも，って書きたい．
 
-        まとめと，今後の課題とか？       
+    \section{結言}\label{sec:Item} % 結言
+        本研究では，囲碁の盤面を含んだ画像から，碁石の配置を識別することを目的としてシステムの検討を行い，数件の画像に対してシステムを適用して有効性を確認した．
+
+        このシステムでは，石の位置に大きなずれが無い，かつ反射光が写り込んでいない場合に限り，碁石を正常に識別することができた．
+
+        今後の課題として，石の位置がずれている場合と，反射光が写り込んでいる場合でも誤った識別をしない手法の模索が挙げられる．
+
+    \section*{謝辞}
+        本研究を進めるにあたり，様々なご指導を頂きました井上優良助教に深謝いたします．
+        %先輩方のを見ると「研究室の同期」への謝辞だったけど，研究室だけじゃなくクラスメイト全体に感謝を示したい．こんな書き方でいいのか？？？
+        また，この研究の機会をくださった情報工学科の先生方，そして多くの知識やご指摘を下さいました同級生の皆様に厚く御礼申し上げます．
+    
 
     \begin{thebibliography}{10} % 参考文献
 
