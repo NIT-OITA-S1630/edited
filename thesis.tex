@@ -15,7 +15,7 @@
 \graphicspath{{./IMG/}} % 画像指定用のパス
 
 \renewcommand{\theequation}{\arabic{section}.\arabic{subsection}.\arabic{equation}}
-\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+\renewcommand{\thefigure}{\arabic{section}-\arabic{figure}}
 \renewcommand{\thetable}{\arabic{section}.\arabic{subsection}.\arabic{table}}
 \makeatletter
 \@addtoreset{equation}{section}
@@ -33,7 +33,8 @@
     \etitle{A Study of System for Extracting Go Stone Positions}  % 英語タイトル
     \author{橋本 燎}{Ryo Hashimoto} % 氏名
     \advisor{井上 優良}{Yusuke Inoue}   % 指導教員氏名
-    \date{令和3年1月dd日}   % 日付
+    % \date{令和3年1月dd日}   % 日付
+    \date{令和3年\number\month 月\number\day 日} %! 実行時の日付が自動挿入されるはず
 
     \begin{abstract} % 概要
         本研究では，コンピュータと現実での囲碁の対局場面との関係をより親密なものにするために，囲碁盤の画像から碁石の配置を識別するシステムを検討する．システムは，指定した四隅の座標をもとに碁盤を切り抜き，グレースケール変換を行った後に，石を設置できる座標の色情報から石の検出を行う．\\
@@ -107,7 +108,7 @@
                     \label{Homogeneous}
                 \end{equation}
 
-                ただし，$\xi_1,\xi_2,\xi_3$のうち，少なくとも1つは0ではないとする．このように定義される座標を同次座標と呼ぶ\cite{Homogenous}．
+                ただし，$\xi_1,\xi_2,\xi_3$のうち，少なくとも1つは0ではないとする．このように定義される座標を同次座標と呼ぶ\cite{DIP}．
 
                 同次座標においては，$\lambda\neq0$なる任意の$\lambda$に対して，$(\xi_1,\xi_2,\xi_3)$と$(\lambda\xi_1,\lambda\xi_2,\lambda\xi_3)$は，通常の座標に直したとき，ともに$(\xi_1/\xi_3,\xi_2/\xi_3)$となるため，同じ点を表している．つまり，同次座標による表現では，定数倍をしても変わらないとみなすことができる．このような表現を同値であるとよび，これを式では以下のように表す．
                 \begin{equation} % 同次座標の数式2
@@ -129,7 +130,7 @@
                 ここで，記号$\sim$が同値関係を表し，定数倍の違いを許して等しいことを意味する．
 
             \subsubsection{射影変換}
-                同次座標を利用することにより，一般的な変換を表現することができる．これは以下の式で表現されるもので，射影変換と呼ばれている．
+                同次座標を利用することにより，一般的な変換を表現することができる．これは以下の式で表現されるもので，射影変換と呼ばれている\cite{DIP}．
                 \begin{equation} % 射影変換の数式
                     \left(
                         \begin{array}{ccc}
@@ -173,7 +174,7 @@
         % 2.2
         %TODO 教科書の図っぽいのを作って挿入とか，フィルタの論文について言及するとか．
         \subsection{空間フィルタ}
-            入力画像の対応する画素値だけでなく，その周囲の画素も含めた領域内の画素値を用いて計算する処理のことを空間フィルタリングといい，この処理で用いるフィルタを空間フィルタという．
+            入力画像の対応する画素値だけでなく，その周囲の画素も含めた領域内の画素値を用いて計算する処理のことを空間フィルタリングといい，この処理で用いるフィルタを空間フィルタという\cite{DIP}．
             
             空間フィルタは，線形フィルタと非線形フィルタの2つに分類できる．
 
@@ -186,7 +187,8 @@
             非線形フィルタは，(\ref{linear_filter})式に当てはまらない処理を伴うフィルタである．
 
         \subsection{メディアンフィルタ}
-            フィルタ範囲内のピクセルの画素値を昇順か降順に並び替え，中央値を出力するフィルタをメディアンフィルタと呼ぶ．
+            フィルタ範囲内のピクセルの画素値を昇順か降順に並び替え，中央値を出力するフィルタをメディアンフィルタと呼ぶ\cite{DIP}．
+            これは非線形フィルタに属する．
             $3\times3$の画素に対しメディアンフィルタを適用した際の例を図\ref{medianBlur}に示す．
 
             \begin{figure}[tb] % メディアンフィルタの図
@@ -196,7 +198,7 @@
                 \label{medianBlur}
                 \end{center}
             \end{figure}
-    
+
             このフィルタは，コントラストの差がある輪郭部分がぼやけにくい特徴を持つ．
             同じ画像に対して，領域内の画素値の平均を出力するフィルタ（平均化フィルタ）とメディアンフィルタを施した例を，それぞれ図\ref{sample_average}，図\ref{sample_median}に示す．
             \begin{figure}[tb] % 平均化フィルタ，メディアンフィルタの2枚
@@ -448,18 +450,10 @@
                     \end{center}
                 \end{figure}
 
-
-
-
-
-
     \section{結言}\label{sec:Item} % 結言
         本文
 
-        まとめと，今後の課題とか？
-
-            
-            
+        まとめと，今後の課題とか？       
 
     \begin{thebibliography}{10} % 参考文献
 
@@ -500,7 +494,7 @@
         芝 浩二郎・古屋 保・西 省吾・森 邦彦（2006）「画像処理による囲碁棋譜自動生成システム」,  『電気学会論文誌C（電子・情報・システム部門誌）』, 126(8), pp.980-989.
 
         % 小澤菜月先輩の論文「GANを用いた編み図ジェネレータの構成のための検討」の参考文献をパクった
-        \bibitem{Homogenous}
+        \bibitem{DIP}
         ディジタル画像処理[改訂第二版]，松阪 喜幸（2020）
 
         % \bibitem{total}
