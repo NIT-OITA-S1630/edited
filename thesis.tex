@@ -15,7 +15,7 @@
 \graphicspath{{./IMG/}} % 画像指定用のパス
 
 \renewcommand{\theequation}{\arabic{section}.\arabic{subsection}.\arabic{equation}}
-\renewcommand{\thefigure}{\arabic{section}.\arabic{subsection}.\arabic{figure}}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
 \renewcommand{\thetable}{\arabic{section}.\arabic{subsection}.\arabic{table}}
 \makeatletter
 \@addtoreset{equation}{section}
@@ -73,6 +73,7 @@
             %?     ・なぜ親密にしようと考えたのか
             %?     ・コンピュータと現実の対局を親密にする，っていうのはどういうのをイメージしているのか．
             %? があると分かりやすくなるかな
+            %! ここ我ながら変な文章だと思う．「親密なものにするため」って何……
         そこで本研究では，コンピュータと現実での囲碁の対局をより親密なものにするために，対局中の囲碁の画像から碁石の配置を識別するシステムの検討を行う．
             % 段落変更対策
         具体的には，盤面を含む画像から射影変換を用いて盤面を切り抜き，ノイズ処理を適用して盤面上の線を曖昧なものにした後に，輝度値をもとに碁石の配置を識別するシステムの構築を行う．
@@ -81,7 +82,7 @@
             % 論文構成について
         本論文の構成は次の通りである．
         第2章では先行研究についての説明を行う．
-        第3章では実験で用いる射影変換とメディアンフィルタ，しきい値の評価で用いた感度と特異度についての説明を行う．
+        第3章ではシステムで用いた射影変換とメディアンフィルタ，しきい値の評価で用いた感度と特異度についての説明を行う．
         第4章ではシステムが行う処理についての説明，具体的には射影変換を利用した画像の変形，メディアンフィルタを用いたノイズ除去，石を置くことができる座標の色情報をもとにした碁石の検出を行う．
         第5章では複数の画像に対してシステムを適用し，結果を考察する．
         最後に第6章で本論文をまとめ，今後の課題について述べる．
@@ -171,8 +172,21 @@
 
         % 2.2
         %TODO 教科書の図っぽいのを作って挿入とか，フィルタの論文について言及するとか．
+        \subsection{空間フィルタ}
+            入力画像の対応する画素値だけでなく，その周囲の画素も含めた領域内の画素値を用いて計算する処理のことを空間フィルタリングといい，この処理で用いるフィルタを空間フィルタという．
+            
+            空間フィルタは，線形フィルタと非線形フィルタの2つに分類できる．
+
+            線形フィルタは，入力画像を$f(i,j)$，出力画像を$g(i,j)$とするとき，以下の式で表すことができるフィルタのことをいう．
+            \begin{equation} \label{linear_filter}
+                g(i,j) = \sum\limits_{n=-W}^{W}\sum\limits_{m=-W}^{W}f(i+m,j+n)h(m,n)
+            \end{equation}
+            $h(m,n)$はフィルタの係数を表す配列であり，フィルタの大きさは$(2W+1)\times(2W+1)$である．
+
+            非線形フィルタは，(\ref{linear_filter})式に当てはまらない処理を伴うフィルタである．
+
         \subsection{メディアンフィルタ}
-            フィルタ範囲内のピクセルを，同範囲内の画素値の中央値で置き換えるフィルタをメディアンフィルタと呼ぶ．
+            フィルタ範囲内のピクセルの画素値を昇順か降順に並び替え，中央値を出力するフィルタをメディアンフィルタと呼ぶ．
             $3\times3$の画素に対しメディアンフィルタを適用した際の例を図\ref{medianBlur}に示す．
 
             \begin{figure}[tb] % メディアンフィルタの図
@@ -253,23 +267,25 @@
             \end{figure}
 
         \subsection{ノイズ除去}
+        \label{noiseReduce}
             後述する識別の方法では，盤面上の線が交差する点を誤って黒石と識別してしまうことがある．
             これを減らすため，ノイズ処理を適用することで，盤面上の線をある程度無視できるようにする． 
             4.1で生成した画像(図\ref{boardImg})に対し，フィルタを用いてノイズ処理を行う．
             フィルタには，輪郭部分がぼやけにくいといった特徴を持つメディアンフィルタを使用する．
-            処理結果を図\ref{noiseReduced}に示す．
+            処理結果を図\ref{noiseReducedImg}に示す．
             \begin{figure}[tb] % ノイズ除去後の盤面
                 \begin{center}
                 \includegraphics[clip,width=80mm]{noiseReducedImg.jpg} 
                 \caption{ノイズ除去後の盤面}
-                \label{noiseReduced}
+                \label{noiseReducedImg}
                 \end{center}
             \end{figure}
 
         \subsection{領域の付与}
             \label{area}
             
-            4.2(図\ref{noiseReduced})に対し，等間隔に$19\times19$個の小さな領域を付与する．領域を可視化した図を図\ref{boardWithArea}に示す．
+            後述する識別の際に，情報を取得するための，$19\times19$個の小さな領域を付与する．
+            \ref{noiseReduce}章で生成した図(図\ref{noiseReducedImg})に対し，領域を可視化した図を図\ref{boardWithArea}に示す．
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
                 \includegraphics[clip,width=80mm]{boardWithAreaImg.jpg} 
@@ -279,14 +295,14 @@
             \end{figure}
 
         \subsection{識別} \label{identify}  
-            \ref{area}で与えた領域内の輝度値の平均（0～255）を取得し，設定したしきい値をもとに，各領域を
+            \ref{area}章で与えた領域内における輝度値の平均（0～255）を取得し，設定したしきい値をもとに，各領域を
             \begin{itemize} % 3種類
                 \item 平均値が黒石のしきい値より小さい ＝ 「黒石がある」
                 \item 平均値が白石のしきい値より大きい ＝ 「白石がある」
-                \item それ以外
+                \item 「それ以外」
             \end{itemize}
-            の3種類に分類する．
-            実際に識別した結果を図\ref{result}に示す．
+            の3種類に分類することで，碁石の識別を行う．
+            盤面の画像（図\ref{boardImg}）上に，実際に識別した結果を重ねた図を図\ref{result}に示す．
 
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
