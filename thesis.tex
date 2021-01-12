@@ -62,7 +62,10 @@
         1969年には，Zobristが世界で初めて囲碁が動作するコンピュータプログラムを作った\cite{Zobrist}．
         2005年には，モンテカルロ木探索を実装した囲碁プログラム``{\it Crazy Stone}''\cite{CrazyStone}が様々な大会で優秀な成績を記録し，以降のコンピュータ囲碁プログラムでも同様のアルゴリズムを採用するなど，コンピュータ囲碁の研究開発に大きな進歩をもたらした．
         2008年には，モンテカルロ木探索を採用した囲碁プログラム``{\it MoGo}''が初めて，公の場でプロ棋士に対して9路盤（$9\times9$の囲碁盤で行われる対局）で勝利を収めた\cite{mogo}．
-        2015年には，Google DeepMind社が開発した，ニューラルネットワークを実装した以後プログラム``{\it AlphaGo}''が，初めてプロ棋士に対しハンデ無しの対局で勝利した．コンピュータが人間に打ち勝つのは難しいとされていた分野で勝利を果たしたことは，人工知能の有用性を広く知らしめるものとなった．
+        
+        近年では，2015年にGoogle DeepMind社が開発した，ディープラーニングを実装した囲碁プログラム``{\it AlphaGo}''\cite{AlphaGo}が，初めてプロ棋士に対しハンデ無しの対局で勝利した．
+        コンピュータが人間に打ち勝つのは難しいとされていた分野で勝利を果たしたことは，人工知能の有用性を広く知らしめるものとなった．
+        以降にも
 
         % 上での話からここへのつなげ方が思いつかない．こんなにいきなり「本研究では……」なんて入り方はどうなんだろう
         % 本研究について　（目的……コンピュータと囲碁の関係をより親密なものにするために？　棋譜の記録の作成を自動化するために？　どうしよう）
@@ -167,23 +170,24 @@
                 射影変換においては，線分の直線性は保たれるものの，平行性は失われる．別の言い方をすると，任意の四角形を別の任意の四角形に移すような変換であるといえる．
 
         % 2.2
+        %TODO 教科書の図っぽいのを作って挿入
         \subsection{メディアンフィルタ}
-            領域内の画素値の中央値（メディアン）を出力とするフィルタをメディアンフィルタと呼ぶ．
+            フィルタ範囲内のピクセルを，同範囲内のピクセルの中央値で置き換えるフィルタをメディアンフィルタと呼ぶ．
             このフィルタは，コントラストの差がある輪郭部分がぼやけにくい特徴を持つ．
             特定の画像に対して，領域内の画素値の平均を出力するフィルタ（平均化フィルタ）とメディアンフィルタを施した一例を，それぞれ図\ref{sample_average}，図\ref{sample_median}に示す．
-            \begin{figure}[tb][tb] % 平均化フィルタ，メディアンフィルタの2枚
+            \begin{figure}[tb] % 平均化フィルタ，メディアンフィルタの2枚
                 \begin{center}
                   \begin{tabular}{c}
                     \begin{minipage}{0.5\hsize}
                       \begin{center}
-                        \includegraphics[width=32mm,height=32mm]{sample_average.jpg}
+                        \includegraphics[clip,width=40mm]{sample_average.jpg}
                     \caption{平均化フィルタ}
                     \label{sample_average}
                       \end{center}
                     \end{minipage}
                     \begin{minipage}{0.5\hsize}
                       \begin{center}
-                        \includegraphics[width=32mm,height=32mm]{sample_median.jpg}
+                        \includegraphics[clip,width=40mm]{sample_median.jpg}
                     \caption{メディアンフィルタ}
                     \label{sample_median}
                       \end{center}
@@ -207,13 +211,14 @@
                 %! 目標は，後で他の人が同じ実験をできるように説明する，です
         本研究で検討したシステムでは，盤面を含む画像から，碁石の位置を識別することを目的とする．
 
+        %? ライブラリの比較，OpenCVを使った理由？　参考文献を探す
         実際には，盤面を含む画像から盤面を切り抜き，碁石上の線を黒石と誤検知しないようノイズ処理を施した後に$19\times19$の領域を付与する．その後，付与した領域内における輝度値の平均を計算し，黒石・白石のしきい値とを比較，結果をもとに石の識別を行う．
         システムの流れを図\ref{flow}に示す．
-            % 図番号が4.0.1になってる．0はマズい？
+            %? 図番号が4.0.1になってる．0はマズい？
             %! 図の番号付け，執筆の最後でいいので整えてください．4.0.1 -> 4.1.2 って変なので．
         \begin{figure}[tb] % フロー図
             \begin{center}
-            \includegraphics[width=72mm,height=75.6mm]{flow.jpg} 
+            \includegraphics[clip,width=90mm]{flow.jpg} 
             \caption{フロー図}
             \label{flow}
             \end{center}
@@ -223,14 +228,14 @@
             盤面画像の生成には，碁盤の頂点座標と，変換後の四角形の頂点座標を指定して変換行列を生成し，その行列を用いて射影変換を行う．変換前と変換後の図を図\ref{cornerImg}，図\ref{boardImg}に示す．
             \begin{figure}[tb] % 射影変換前の画像
                 \begin{center}
-                \includegraphics[width=72mm,height=35mm]{cornerImg.jpg} 
+                \includegraphics[clip,width=80mm]{cornerImg.jpg} 
                 \caption{射影変換前}
                 \label{cornerImg}
                 \end{center}
             \end{figure}
             \begin{figure}[tb] % 射影変換後の画像
                 \begin{center}
-                \includegraphics[width=50mm,height=50mm]{boardImg.jpg} 
+                \includegraphics[clip,width=80mm]{boardImg.jpg} 
                 \caption{射影変換後}
                 \label{boardImg}
                 \end{center}
@@ -240,7 +245,7 @@
             4.1で生成した画像(図\ref{boardImg})に対し，碁盤上の線を消すために，メディアンフィルタを用いてノイズ処理を行う．処理結果を図\ref{noiseReduced}に示す．
             \begin{figure}[tb] % ノイズ除去後の盤面
                 \begin{center}
-                \includegraphics[width=50mm,height=50mm]{noiseReducedImg.jpg} 
+                \includegraphics[clip,width=80mm]{noiseReducedImg.jpg} 
                 \caption{ノイズ除去後の盤面}
                 \label{noiseReduced}
                 \end{center}
@@ -251,7 +256,7 @@
             4.2(図\ref{noiseReduced})に対し，等間隔に$19\times19$個の小さな領域を付与する．領域を可視化した図を図\ref{boardWithArea}に示す．
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
-                \includegraphics[width=50mm,height=50mm]{boardWithAreaImg.jpg} 
+                \includegraphics[clip,width=80mm]{boardWithAreaImg.jpg} 
                 \caption{領域を可視化した盤面}
                 \label{boardWithArea}
                 \end{center}
@@ -265,17 +270,15 @@
                 \item それ以外
             \end{itemize}
             の3種類に分類する．
-            %! この下の図は必要か？　PDFじゃなく印刷提出なら白黒印刷するはずだし，いらない気もする．
             実際に識別した結果を図\ref{result}に示す．
 
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
-                \includegraphics[width=50mm,height=50mm]{result.jpg} 
+                \includegraphics[clip,width=80mm]{result.jpg} 
                 \caption{識別結果を重ねた盤面}
                 \label{result}
                 \end{center}
             \end{figure}
-
 
     \section{実験と考察} % セクション．実験
             %TODO 実験の目的をこの章のどこかに書こう
@@ -293,7 +296,7 @@
             図\ref{Case1White}，図\ref{Case2White}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対して，白石のしきい値は156～160の範囲で感度100\%，特異度100\%を記録したため，今回の実験ではその範囲の中央値である158を使用した．
             \begin{figure}[tb] % DSC_0087
                 \begin{center}
-                \includegraphics[width=50mm,height=50mm]{DSC_0087/boardImg.jpg} 
+                \includegraphics[clip,width=80mm]{DSC_0087/boardImg.jpg} 
                 \caption{しきい値の決定に用いた盤面1}
                 \label{DSC0087}
                 \end{center}
@@ -301,7 +304,7 @@
 
             \begin{figure}[tb] % DSC_0100
                 \begin{center}
-                \includegraphics[width=50mm,height=50mm]{DSC_0100/boardImg.jpg} 
+                \includegraphics[clip,width=80mm]{DSC_0100/boardImg.jpg} 
                 \caption{しきい値の決定に用いた盤面2}
                 \label{DSC0100}
                 \end{center}
@@ -309,7 +312,7 @@
 
             \begin{figure}[tb] % 黒石の感度・特異度1
                 \begin{center}
-                \includegraphics[width=80mm,height=40mm]{Case1_Black_TPF_TNF.eps} 
+                \includegraphics[clip,width=80mm]{Case1_Black_TPF_TNF.eps} 
                 \caption{黒石の感度・特異度1}
                 \label{Case1Black}
                 \end{center}
@@ -317,7 +320,7 @@
 
             \begin{figure}[tb] % 黒石の感度・特異度2
                 \begin{center}
-                \includegraphics[width=80mm,height=40mm]{Case2_Black_TPF_TNF.eps} 
+                \includegraphics[clip,width=80mm]{Case2_Black_TPF_TNF.eps} 
                 \caption{黒石の感度・特異度2}
                 \label{Case2Black}
                 \end{center}
@@ -325,7 +328,7 @@
 
             \begin{figure}[tb] % 白石の感度・特異度1
                 \begin{center}
-                \includegraphics[width=80mm,height=40mm]{Case1_White_TPF_TNF.eps} 
+                \includegraphics[clip,width=80mm]{Case1_White_TPF_TNF.eps} 
                 \caption{白石の感度・特異度1}
                 \label{Case1White}
                 \end{center}
@@ -333,7 +336,7 @@
             
             \begin{figure}[tb] % 白石の感度・特異度2
                 \begin{center}
-                \includegraphics[width=80mm,height=40mm]{Case2_White_TPF_TNF.eps} 
+                \includegraphics[clip,width=80mm]{Case2_White_TPF_TNF.eps} 
                 \caption{白石の感度・特異度2}
                 \label{Case2White}
                 \end{center}
@@ -344,7 +347,7 @@
                 この盤面画像（図\ref{ex1}）に対し，システムを適用した結果，全ての碁石を正確に識別できた．
                 \begin{figure}[tb] % 事例1_盤面
                     \begin{center}
-                    \includegraphics[width=60mm,height=60mm]{DSC_0041/boardImg.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0041/boardImg.jpg} 
                     \caption{事例1の盤面}
                     \label{ex1}
                     \end{center}
@@ -359,7 +362,7 @@
                 このことから，石が正しく盤面上の交点に配置されていない場合，システムは正常に識別できないと考える．
                 \begin{figure}[tb] % 事例2_盤面
                     \begin{center}
-                    \includegraphics[width=60mm,height=60mm]{DSC_0099/boardImg.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0099/boardImg.jpg} 
                     \caption{事例2の盤面}
                     \label{ex2}
                     \end{center}
@@ -367,7 +370,7 @@
 
                 \begin{figure}[tb] % 事例2_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[width=40mm,height=40mm]{DSC_0099/TRIM_resultCompare.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0099/TRIM_resultCompare.jpg} 
                     \caption{事例2の誤り部分}
                     \label{ex2_error}
                     \end{center}
@@ -375,7 +378,7 @@
 
                 \begin{figure}[tb] % 事例2_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[width=40mm,height=40mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
                     \caption{誤り部分の領域を可視化した図}
                     \label{ex2_error_area}
                     \end{center}
@@ -390,7 +393,7 @@
                 このことから，石が正しく盤面上の交点に配置されていない場合，システムは正常に識別できないと考える．
                 \begin{figure}[tb] % 事例3_盤面
                     \begin{center}
-                    \includegraphics[width=60mm,height=60mm]{DSC_0098/boardImg.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0098/boardImg.jpg} 
                     \caption{事例3の盤面}
                     \label{ex3}
                     \end{center}
@@ -398,7 +401,7 @@
 
                 \begin{figure}[tb] % 事例3_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[width=50mm,height=50mm]{DSC_0098/TRIM_resultCompare.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0098/TRIM_resultCompare.jpg} 
                     \caption{誤り部分の一部}
                     \label{ex3_error}
                     \end{center}
@@ -407,7 +410,7 @@
                     %TODO: inRange()で，白のしきい値が拾った部分の二値画像を作る
                 \begin{figure}[tb] % 事例3_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[width=50mm,height=50mm]{DSC_0098/TRIM_inRange_WHITE.jpg} 
+                    \includegraphics[clip,width=80mm]{DSC_0098/TRIM_inRange_WHITE.jpg} 
                     \caption{誤り部分をしきい値で二値化}
                     \label{ex3_error_area}
                     \end{center}
