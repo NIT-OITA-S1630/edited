@@ -1,4 +1,3 @@
-/.gitignore
 /summary.pdf
 /summary.tex
 /thesis.aux
@@ -7,3 +6,4 @@
 /thesis.synctex.gz
 /thesis.xdv
 /thesis_RevInoue.pdf
+.gitignore
