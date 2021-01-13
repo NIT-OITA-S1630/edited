@@ -134,6 +134,7 @@
                 \end{equation}
                 ここで，記号$\sim$が同値関係を表し，定数倍の違いを許して等しいことを意味する．
 
+                %! http://www.info.hiroshima-cu.ac.jp/~miyazaki/knowledge/tech0115.html
             \subsubsection{射影変換}
                 同次座標を利用することにより，一般的な変換を表現することができる．これは以下の式で表現されるもので，射影変換と呼ばれている\cite{DIP}．
                 \begin{equation} % 射影変換の数式
@@ -164,14 +165,118 @@
                 \begin{equation}
                     \bm{\vec{x}'} \sim \bm{H\vec{x}}
                 \end{equation}
-                $\bm{H}$は任意の$3\times3$の行列である．
+                $\bm{H}$は任意の$3\times3$の行列である．これを変換行列という．
 
-                式(\ref{Homogeneous})の関係を用いて，(\ref{Homography})から座標$(x',y')$を求めると以下のようになる．
+                式(\ref{Homogeneous})の関係を用いて，(\ref{Homography})から座標$(x',y')$を求めると以下のように表すことができる．
                 \begin{equation} % 変換行列を用いてx,yを表現する式
                     \begin{split} % 複数行に1つの式番号を与える
                         x' = \frac{h_{11}x+h_{12}y+h_{13}}{h_{31}x+h_{32}y+h_{33}} \\ 
                         y' = \frac{h_{21}x+h_{22}y+h_{23}}{h_{31}x+h_{32}y+h_{33}} \\ 
                     \end{split}
+                    \label{transform_XY}
+                \end{equation}
+
+                一意に射影変換の変換行列を表すため，行列のどれか1つの値を固定する．$h_{33}=1$とし，(\ref{transform_XY})に代入，式変形を行うと$(x',y')$は以下のように表すことができる．
+                \begin{equation} % 変換行列を用いてx,yを表現する式
+                    \begin{split} % 複数行に1つの式番号を与える
+                        xh_{11}+yh_{12}+h_{13}-xx'h_{31}-yx'h_{32} = x'\\ 
+                        xh_{21}+yh_{22}+h_{23}-xy'h_{31}-yy'h_{32} = x'\\ 
+                    \end{split}
+                    \label{transform_XY_ALT}
+                \end{equation}
+
+                (\ref{transform_XY_ALT})をベクトル演算で表記すると，以下のように表記できる．
+                \begin{equation}
+                    \begin{split}
+                        (x,y,1,0,0,0,-xx',-yx') (h_{11},h_{12},\cdots,h_{31},h_{32})^T \\
+                        (0,0,0,x,y,1,-xy',-yy') (h_{11},h_{12},\cdots,h_{31},h_{32})^T
+                    \end{split}
+                    \label{transform_XY_Vector}
+                \end{equation}
+
+                2つの四角形の頂点座標をそれぞれ
+                $((x_{11},y_{11}),(x_{12},y_{12}),(x_{13},y_{13}),(x_{14},y_{14}))$，$((x_{21},y_{21}),(x_{22},y_{22}),(x_{23},y_{23}),(x_{24},y_{24}))$
+                とすると，すべての頂点を(\ref{transform_XY_Vector})で表すと以下の式になる．
+                \begin{equation} % 8*8
+                    \left(
+                    \begin{matrix}
+                        x_{11},y_{11},1,0,0,0,-x_{11}x_{21},-y_{11}x_{21}\\
+                        0,0,0,x_{11},y_{11},1,-x_{11}y_{21},-y_{11}y_{21}\\
+                        x_{12},y_{12},1,0,0,0,-x_{12}x_{22},-y_{12}x_{22}\\
+                        0,0,0,x_{12},y_{12},1,-x_{12}y_{22},-y_{12}y_{22}\\
+                        x_{13},y_{13},1,0,0,0,-x_{13}x_{23},-y_{13}x_{23}\\
+                        0,0,0,x_{13},y_{13},1,-x_{13}y_{23},-y_{13}y_{23}\\
+                        x_{14},y_{14},1,0,0,0,-x_{14}x_{24},-y_{14}x_{24}\\
+                        0,0,0,x_{14},y_{14},1,-x_{14}y_{24},-y_{14}y_{24}\\
+                    \end{matrix}
+                    \right)
+                    \left(
+                    \begin{matrix}
+                        h_{11}\\
+                        h_{12}\\
+                        h_{13}\\
+                        h_{21}\\
+                        h_{22}\\
+                        h_{23}\\
+                        h_{31}\\
+                        h_{32}\\
+                    \end{matrix}
+                    \right)
+                    =
+                    \left(
+                    \begin{matrix}
+                        x_{21}\\
+                        y_{21}\\
+                        x_{22}\\
+                        y_{22}\\
+                        x_{23}\\
+                        y_{23}\\
+                        x_{24}\\
+                        y_{24}\\
+                    \end{matrix}
+                    \right)      
+                    \label{8x8vector}
+                \end{equation}
+                よって，(\ref{8x8vector})の左辺にある$8\times8$行列の逆行列を計算することで，射影変換の変換行列の各要素が求まる\cite{SquareTransform}．
+                \begin{equation} % 8*8
+                    \left(
+                        \begin{matrix}
+                            h_{11}\\
+                            h_{12}\\
+                            h_{13}\\
+                            h_{21}\\
+                            h_{22}\\
+                            h_{23}\\
+                            h_{31}\\
+                            h_{32}\\
+                        \end{matrix}
+                        \right)
+                        =    
+                    \left(
+                    \begin{matrix}
+                        x_{11},y_{11},1,0,0,0,-x_{11}x_{21},-y_{11}x_{21}\\
+                        0,0,0,x_{11},y_{11},1,-x_{11}y_{21},-y_{11}y_{21}\\
+                        x_{12},y_{12},1,0,0,0,-x_{12}x_{22},-y_{12}x_{22}\\
+                        0,0,0,x_{12},y_{12},1,-x_{12}y_{22},-y_{12}y_{22}\\
+                        x_{13},y_{13},1,0,0,0,-x_{13}x_{23},-y_{13}x_{23}\\
+                        0,0,0,x_{13},y_{13},1,-x_{13}y_{23},-y_{13}y_{23}\\
+                        x_{14},y_{14},1,0,0,0,-x_{14}x_{24},-y_{14}x_{24}\\
+                        0,0,0,x_{14},y_{14},1,-x_{14}y_{24},-y_{14}y_{24}\\
+                    \end{matrix}
+                    \right)^{-1}
+                    \left(
+                    \begin{matrix}
+                        x_{21}\\
+                        y_{21}\\
+                        x_{22}\\
+                        y_{22}\\
+                        x_{23}\\
+                        y_{23}\\
+                        x_{24}\\
+                        y_{24}\\
+                    \end{matrix}
+                    \right)      
+                    \label{8x8vector_Inverse}
                 \end{equation}
 
                 射影変換においては，線分の直線性は保たれるものの，平行性は失われる．別の言い方をすると，任意の四角形を別の任意の四角形に移すような変換であるといえる．
@@ -274,6 +379,8 @@
 
             次に，warpPerspective()関数に，第一引数には画像情報を格納した変数，第二引数には求めた変換行列，第三引数には出力画像のサイズを与えることで，画像に対する射影変換を行う．
 
+            今回の実験では，変換行列の計算に用いる変換後の正方形の頂点と，出力する画像のサイズに$800\times800$の正方形を与えた．
+
             \begin{figure}[tb] % 射影変換前の画像
                 \begin{center}
                 \includegraphics[clip,width=80mm]{cornerImg.jpg} 
@@ -298,6 +405,7 @@
             
             OpenCVを用いたメディアンフィルタには，medianBlur()関数に，第一引数に画像情報を格納した変数，第二引数にフィルタのカーネルサイズを与えることで実装できる．
             ここで，カーネルサイズの指定には奇数を用いる．これはメディアンフィルタの理論上，偶数のカーネルサイズを与えると中央値が求められないためである．
+            今回の実験では，カーネルサイズに25を与える．
             処理結果を図\ref{noiseReducedImg}に示す．
             \begin{figure}[tb] % ノイズ除去後の盤面
                 \begin{center}
@@ -552,6 +660,11 @@
         % 小澤菜月先輩の論文「GANを用いた編み図ジェネレータの構成のための検討」の参考文献をパクった
         \bibitem{DIP}
         ディジタル画像処理[改訂第二版]，松阪 喜幸（2020）
+
+        \bibitem{SquareTransform}
+        宮崎 大輔「四角形から四角形への変換」（最終閲覧日：令和3年1月13日）
+        
+        http://www.info.hiroshima-cu.ac.jp/~miyazaki/knowledge/tech0115.html
 
     \end{thebibliography}
 
