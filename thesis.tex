@@ -43,7 +43,7 @@
     \end{abstract}
 
     \begin{keyword} % キーワード
-        画像処理，OpenCV，射影変換
+        画像処理，OpenCV，射影変換，メディアンフィルタ
     \end{keyword}
 
 
@@ -57,8 +57,6 @@
             % 囲碁・棋譜について（もうちょっと説明が欲しい，けど書くことが無い）
         囲碁は，2人のプレイヤーが，「碁石」と呼ばれる白黒の石を，通常$19\times19$の格子が描かれた「碁盤」と呼ばれる板へ交互に配置するボードゲームである．
         他のボードゲームと比較すると，ルール上の制約が極めて少ないといった特徴を持ち，他のボードゲームよりも可能な局面の数は膨大になる（約$2.081681994 \times 10^{170}$通り\cite{numbers}）．
-
-        日本棋院によると，2014年時点での，国内における囲碁人口は推定350万人，世界の囲碁人口は推定4000万人とされている．
 
             % ここもっと書きたい．コンピュータと囲碁の関係とか．最近AIとかで盛んになってきてることとか．（ただ良さげな参考文献が無い！！）
             % 『コンピュータ囲碁研究』（https://www.jstage.jst.go.jp/article/jjsai/10/6/10_860/_pdf/-char/ja）
@@ -281,6 +279,17 @@
 
                 射影変換においては，線分の直線性は保たれるものの，平行性は失われる．別の言い方をすると，任意の四角形を別の任意の四角形に移すような変換であるといえる．
 
+                射影変換の概略図を図\ref{sample_homography}に示す．
+
+                \begin{figure}[tb] % 射影変換の概略図
+                    \begin{center}
+                    \includegraphics[clip,width=90mm]{Homography.jpg} 
+                    \caption{射影変換の概略図}
+                    \label{sample_homography}
+                    \end{center}
+                \end{figure}
+    
+
         % 2.2
         %TODO 教科書の図っぽいのを作って挿入とか，フィルタの論文について言及するとか．
         \subsection{空間フィルタ}
@@ -388,7 +397,7 @@
             \end{figure}
             \begin{figure}[tb] % 射影変換後の画像
                 \begin{center}
-                \includegraphics[clip,width=80mm]{boardImg.jpg} 
+                \includegraphics[clip,width=60mm]{boardImg.jpg} 
                 \caption{射影変換後}
                 \label{boardImg}
                 \end{center}
@@ -407,7 +416,7 @@
             処理結果を図\ref{noiseReducedImg}に示す．
             \begin{figure}[tb] % ノイズ除去後の盤面
                 \begin{center}
-                \includegraphics[clip,width=80mm]{noiseReducedImg.jpg} 
+                \includegraphics[clip,width=60mm]{noiseReducedImg.jpg} 
                 \caption{ノイズ除去後の盤面}
                 \label{noiseReducedImg}
                 \end{center}
@@ -419,7 +428,7 @@
             \ref{noiseReduce}小節で生成した図(図\ref{noiseReducedImg})に対し，領域を可視化した図を図\ref{boardWithArea}に示す．
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
-                \includegraphics[clip,width=80mm]{boardWithAreaImg.jpg} 
+                \includegraphics[clip,width=60mm]{boardWithAreaImg.jpg} 
                 \caption{領域を可視化した盤面}
                 \label{boardWithArea}
                 \end{center}
@@ -437,7 +446,7 @@
 
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
-                \includegraphics[clip,width=80mm]{result.jpg} 
+                \includegraphics[clip,width=60mm]{result.jpg} 
                 \caption{識別結果を重ねた盤面}
                 \label{result}
                 \end{center}
@@ -471,7 +480,7 @@
 
             \begin{figure}[tb] % DSC_0087
                 \begin{center}
-                \includegraphics[clip,width=80mm]{DSC_0087/boardImg.jpg} 
+                \includegraphics[clip,width=60mm]{DSC_0087/boardImg.jpg} 
                 \caption{しきい値の決定に用いた盤面1}
                 \label{DSC0087}
                 \end{center}
@@ -479,7 +488,7 @@
 
             \begin{figure}[tb] % DSC_0100
                 \begin{center}
-                \includegraphics[clip,width=80mm]{DSC_0100/boardImg.jpg} 
+                \includegraphics[clip,width=60mm]{DSC_0100/boardImg.jpg} 
                 \caption{しきい値の決定に用いた盤面2}
                 \label{DSC0100}
                 \end{center}
@@ -527,7 +536,7 @@
                 この盤面画像（図\ref{ex1}）に対し，システムを適用した結果，全ての碁石を正確に識別できた．
                 \begin{figure}[tb] % 事例1_盤面
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0041/boardImg.jpg} 
+                    \includegraphics[clip,width=60mm]{DSC_0041/boardImg.jpg} 
                     \caption{事例1の盤面}
                     \label{ex1}
                     \end{center}
@@ -543,7 +552,7 @@
                 
                 \begin{figure}[tb] % 事例2_盤面
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0099/boardImg.jpg} 
+                    \includegraphics[clip,width=60mm]{DSC_0099/boardImg.jpg} 
                     \caption{事例2の盤面}
                     \label{ex2}
                     \end{center}
@@ -551,7 +560,7 @@
 
                 \begin{figure}[tb] % 事例2_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0099/TRIM_resultCompare.jpg} 
+                    \includegraphics[clip,width=40mm]{DSC_0099/TRIM_resultCompare.jpg} 
                     \caption{事例2の誤り部分}
                     \label{ex2_error}
                     \end{center}
@@ -559,7 +568,7 @@
 
                 \begin{figure}[tb] % 事例2_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
+                    \includegraphics[clip,width=40mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
                     \caption{誤り部分の領域を可視化した図}
                     \label{ex2_error_area}
                     \end{center}
@@ -573,7 +582,7 @@
                 このことから，盤面や黒石に反射光が含まれていると，システムは誤って白石と識別してしまうと考える．
                 \begin{figure}[tb] % 事例3_盤面
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0098/boardImg.jpg} 
+                    \includegraphics[clip,width=60mm]{DSC_0098/boardImg.jpg} 
                     \caption{事例3の盤面}
                     \label{ex3}
                     \end{center}
@@ -581,7 +590,7 @@
 
                 \begin{figure}[tb] % 事例3_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0098/TRIM_resultCompare.jpg} 
+                    \includegraphics[clip,width=40mm]{DSC_0098/TRIM_resultCompare.jpg} 
                     \caption{誤り部分の一部}
                     \label{ex3_error}
                     \end{center}
@@ -590,20 +599,26 @@
                     %TODO: inRange()で，白のしきい値が拾った部分の二値画像を作る
                 \begin{figure}[tb] % 事例3_エラー部分の拡大
                     \begin{center}
-                    \includegraphics[clip,width=80mm]{DSC_0098/TRIM_inRange_WHITE.jpg} 
+                    \includegraphics[clip,width=40mm]{DSC_0098/TRIM_inRange_WHITE.jpg} 
                     \caption{誤り部分をしきい値で二値化}
                     \label{ex3_error_area}
                     \end{center}
                 \end{figure}
 
     \section{結言}\label{sec:Item} % 結言
-        本研究では，囲碁の盤面を含んだ画像から，碁石の配置を識別することを目的として，画像上から碁石の配置を識別するシステムの検討を行い，数件の画像に対してシステムを適用して有効性を確認した．
+        本研究では，囲碁の盤面を含んだ画像から碁石の配置を識別することを目的として，画像上から碁石の配置を識別するシステムの検討を行い，数件の画像に対してシステムを適用して有効性を確認した．
 
-        \ref{identify_result}節より，石の位置に大きなずれが無い，かつ反射光が写り込んでいない場合に限り，碁石を正常に識別することができた．
+        \ref{identify_result}節より，本研究で検討したシステムでは，石の位置に大きなずれが無い，かつ反射光が写り込んでいない場合に限り，碁石を正常に識別することができた．
         石のずれに対応できない問題には，画像に付与する領域（碁石座標）の位置を等間隔ではなく，碁盤の交点や石の形状をもとに検出することでこれを解決できると考える．
         反射光を白石と識別していまう問題には，しきい値を固定するのではなく，画像の状況に応じて最適なしきい値を算出することや，画像上の反射光の写り込みを軽減させる画像処理で，誤った識別をする数を減らすことができると考える．
-        
-        今後の課題として，石の座標を検出する手法と，画像の状況に応じて適切なしきい値を算出する手法，反射光を軽減させる画像処理の手法の模索が挙げられる．
+        さらに，現状のシステムでは，射影変換の際に用いる碁盤の四隅の座標を手動で入力しているため，撮影位置・角度を変更する度にこの座標の再設定が必要となる．
+
+        今後の課題として，
+        \begin{itemize}
+            \item 石の座標を検出する手法
+            \item 画像の状況に応じて適切なしきい値を算出する手法，もしくは反射光を軽減させる画像処理の手法
+        \end{itemize}
+        の模索が挙げられる．
 
     \section*{謝辞} %! 「*」を付けることで，セクションに章番号を付与しない
         本研究を進めるにあたり，様々なご指導を頂きました井上優良助教に深謝いたします．
