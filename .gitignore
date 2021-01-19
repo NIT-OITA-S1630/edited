@@ -1,9 +1,6 @@
-/summary.pdf
-/summary.tex
-/thesis.aux
-/thesis.dvi
-/thesis.log
-/thesis.synctex.gz
-/thesis.xdv
-/thesis_RevInoue.pdf
-.gitignore
+*
+!/IMG/*
+!/nitocs.cls
+!/README.md
+!/thesis.pdf
+!/thesis.tex
