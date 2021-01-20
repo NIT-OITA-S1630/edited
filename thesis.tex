@@ -92,7 +92,7 @@
             % 論文構成について
         本論文の構成は次の通りである．
         第2章では先行研究についての説明を行う．
-        第3章ではシステムで用いた射影変換とメディアンフィルタ，しきい値の評価で用いた感度と特異度についての説明を行う．
+        第3章ではシステムで用いた射影変換とメディアンフィルタ，しきい値の評価で用いたと真陰性率についての説明を行う．
         第4章ではシステムが行う処理についての説明，具体的には射影変換を利用した画像の変形，メディアンフィルタを用いたノイズ除去，石を置くことができる座標の色情報をもとにした碁石の検出を行う．
         第5章では複数の画像に対してシステムを適用し，結果を考察する．
         最後に第6章で本論文をまとめ，今後の課題について述べる．
@@ -385,7 +385,7 @@
 
 
 
-    \section{盤面識別システム} % セクション．システムについて
+    \section{碁石識別システム} % セクション．システムについて
     \label{system}
             %TODO この章はもっと書けると思うので，全体的に説明を拡充しましょう！
                 %! 目標は，後で他の人が同じ実験をできるように説明する，です
@@ -426,18 +426,20 @@
 
             \begin{figure}[tb] % 射影変換前の画像
                 \begin{center}
-                \includegraphics[clip,width=80mm]{cornerImg.jpg} 
+                \includegraphics[clip,width=80mm]{DSC_0041/cornerImg.jpg} 
                 \caption{射影変換前}
                 \label{cornerImg}
                 \end{center}
             \end{figure}
             \begin{figure}[tb] % 射影変換後の画像
                 \begin{center}
-                \includegraphics[clip,width=60mm]{boardImg.jpg} 
+                \includegraphics[clip,width=60mm]{DSC_0041/boardImg.jpg} 
                 \caption{射影変換後}
                 \label{boardImg}
                 \end{center}
             \end{figure}
+
+        %TODO グレースケール処理
 
         \subsection{ノイズ除去}
         \label{noiseReduce}
@@ -453,7 +455,7 @@
             処理結果を図\ref{noiseReducedImg}に示す．
             \begin{figure}[tb] % ノイズ除去後の盤面
                 \begin{center}
-                \includegraphics[clip,width=60mm]{noiseReducedImg.jpg} 
+                \includegraphics[clip,width=60mm]{DSC_0041/noiseReducedImg.jpg} 
                 \caption{ノイズ除去後の盤面}
                 \label{noiseReducedImg}
                 \end{center}
@@ -465,7 +467,7 @@
             \ref{noiseReduce}節で生成した図(図\ref{noiseReducedImg})に対し，各領域を緑色の四角形で表した画像を図\ref{boardWithArea}に示す．
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
-                \includegraphics[clip,width=60mm]{boardWithAreaImg.jpg} 
+                \includegraphics[clip,width=60mm]{DSC_0041/boardWithAreaImg.jpg} 
                 \caption{領域を可視化した盤面}
                 \label{boardWithArea}
                 \end{center}
@@ -482,7 +484,7 @@
 
             \begin{figure}[tb] % 領域を可視化した図
                 \begin{center}
-                \includegraphics[clip,width=60mm]{result.jpg} 
+                \includegraphics[clip,width=60mm]{DSC_0041/result.jpg} 
                 \caption{識別結果を重ねた盤面}
                 \label{result}
                 \end{center}
@@ -501,16 +503,16 @@
             どのしきい値で最も正確に識別を行えるか確認するために，2枚の盤面画像（図\ref{DSC0087}，図\ref{DSC0100}）に対しシステムを適用して碁石の識別を行う．
             しきい値を変化させながらシステムを適用し，しきい値の変動に対応して変動した以下の4項目によって，最適な値を決定する．
             \begin{itemize}
-                \item 白石を，白石と識別した割合（白石の感度）
-                \item 黒石を，黒石と識別した割合（黒石の感度）
-                \item 白石でないものを，正しく白石でないと識別した割合（白石の特異度）
-                \item 黒石でないものを，正しく黒石でないと識別した割合（黒石の特異度）
+                \item 白石を，白石と識別した割合（白石の真陽性率）
+                \item 黒石を，黒石と識別した割合（黒石の真陽性率）
+                \item 白石でないものを，正しく白石でないと識別した割合（白石の真陰性率）
+                \item 黒石でないものを，正しく黒石でないと識別した割合（黒石の真陰性率）
             \end{itemize}
 
-            図\ref{DSC0087}，図\ref{DSC0100}におけるしきい値を横軸に，縦軸には白石の感度と特異度の割合をプロットしたグラフをそれぞれ図\ref{Case1White}と図\ref{Case2White}に，
-            縦軸に黒石の感度と特異度をプロットしたグラフをそれぞれ図\ref{Case1Black}と図\ref{Case2Black}に示す．
-            図\ref{Case1White}，図\ref{Case2White}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対し白石のしきい値は156～160の範囲で感度100\%，特異度100\%を記録したため，以降の実験ではその範囲の中央値である158を使用する．
-            また図\ref{Case1Black}と図\ref{Case2Black}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対し黒石のしきい値は52で感度100\%，特異度100\%を記録したため，以降の実験では52を使用する．
+            図\ref{DSC0087}，図\ref{DSC0100}におけるしきい値を横軸に，縦軸には白石の真陽性率と真陰性率の割合をプロットしたグラフをそれぞれ図\ref{Case1White}と図\ref{Case2White}に，
+            縦軸に黒石の真陽性率と真陰性率をプロットしたグラフをそれぞれ図\ref{Case1Black}と図\ref{Case2Black}に示す．
+            図\ref{Case1White}，図\ref{Case2White}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対し白石のしきい値は156～160の範囲で真陽性率100\%，真陰性率100\%を記録したため，以降の実験ではその範囲の中央値である158を使用する．
+            また図\ref{Case1Black}と図\ref{Case2Black}より，図\ref{DSC0087}と図\ref{DSC0100}の両方に対し黒石のしきい値は52で真陽性率100\%，真陰性率100\%を記録したため，以降の実験では52を使用する．
 
             \begin{figure}[tb] % DSC_0087
                 \begin{center}
@@ -528,34 +530,34 @@
                 \end{center}
             \end{figure}
 
-            \begin{figure}[tb] % 白石の感度・特異度1
+            \begin{figure}[tb] % 白石の真陽性率・真陰性率1
                 \begin{center}
                 \includegraphics[clip,width=80mm]{Case1_White_TPF_TNF.eps} 
-                \caption{白石の感度・特異度1}
+                \caption{白石の真陽性率・真陰性率1}
                 \label{Case1White}
                 \end{center}
             \end{figure}
             
-            \begin{figure}[tb] % 白石の感度・特異度2
+            \begin{figure}[tb] % 白石の真陽性率・真陰性率2
                 \begin{center}
                 \includegraphics[clip,width=80mm]{Case2_White_TPF_TNF.eps} 
-                \caption{白石の感度・特異度2}
+                \caption{白石の真陽性率・真陰性率2}
                 \label{Case2White}
                 \end{center}
             \end{figure}
 
-            \begin{figure}[tb] % 黒石の感度・特異度1
+            \begin{figure}[tb] % 黒石の真陽性率・真陰性率1
                 \begin{center}
                 \includegraphics[clip,width=80mm]{Case1_Black_TPF_TNF.eps} 
-                \caption{黒石の感度・特異度1}
+                \caption{黒石の真陽性率・真陰性率1}
                 \label{Case1Black}
                 \end{center}
             \end{figure}
 
-            \begin{figure}[tb] % 黒石の感度・特異度2
+            \begin{figure}[tb] % 黒石の真陽性率・真陰性率2
                 \begin{center}
                 \includegraphics[clip,width=80mm]{Case2_Black_TPF_TNF.eps} 
-                \caption{黒石の感度・特異度2}
+                \caption{黒石の真陽性率・真陰性率2}
                 \label{Case2Black}
                 \end{center}
             \end{figure}
@@ -594,7 +596,7 @@
 
                 この盤面画像（図\ref{ex2_img}）に対しシステムを適用した．
                 実際は白石が置かれてあり，システムが「石がない」と誤って識別した位置の周囲を緑色の四角形で示す．
-                周囲を拡大し，誤って識別した位置に記号を付与した画像を図\ref{ex2_error}に示す．
+                緑の四角形で囲んだ範囲を拡大し，誤って識別した位置に記号を付与した画像を図\ref{ex2_error}に示す．
 
                 図\ref{ex2_error}の範囲に対し，図\ref{noiseReducedImg}と同様に，輝度値の平均を取得する領域を可視化した画像を図\ref{ex2_error_area}に示す．
                 図の中央部分を見ると，碁石の大部分が領域からはみ出ているのが分かる．
@@ -633,7 +635,11 @@
             \subsubsection{事例3} % 反射による失敗．DSC_0098．
                 反射光が映り込んでいる状況に対しシステムを適用する．
 
-                この盤面画像（図\ref{ex3_img}）に対しシステムを適用した．システムが誤って識別した位置を緑色の四角形で示す．
+                この盤面画像（図\ref{ex3_img}）に対しシステムを適用した．
+                実際は碁石が設置されておらず，システムが「白石がある」と誤って識別した位置の周囲を緑色の四角形で示す．
+                緑の四角形で囲んだ範囲を拡大し，誤って識別した位置に記号を付与した画像を図\ref{ex2_error}に示す．
+
+
                 実際は碁石が設置されていない位置を，システムが「白石がある」と誤って識別した位置にマークを付け，その一部をトリミングしたものを図\ref{ex3_error}に示す．
 
                 図\ref{ex3_error}の範囲に対し，白石の識別に用いた閾値よりも暗い部分を0，明るい部分を1として二値画像を生成すると，白石が無い部分もしきい値以上の明るさであることが分かる．
