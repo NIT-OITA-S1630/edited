@@ -30,7 +30,7 @@
 \setcounter{page}{1}
 \begin{document}
 
-    \title{囲碁における盤面識別システムの検討}  % タイトル
+    \title{囲碁における碁石識別システムの検討}  % タイトル
     \etitle{A Study of System for Extracting Go Stone Positions}  % 英語タイトル
     \author{橋本 燎}{Ryo Hashimoto} % 氏名
     \advisor{井上 優良}{Yusuke Inoue}   % 指導教員氏名
@@ -117,119 +117,149 @@
 
     \section{理論} % セクション．理論
     \label{config}
-        \subsection{変換}
-            \subsubsection{同次座標}
-                座標$(x,y)$に対し，その要素を1つ増やした座標$(\xi_1,\xi_2,\xi_3)$を，以下の関係式を満たすように定義する．\\
-                \begin{equation} % 同次座標の数式
-                    \begin{split} % 複数行に1つの式番号を与える
-                        x = \frac{\xi_1}{\xi_3} \\ 
-                        y = \frac{\xi_2}{\xi_3}
-                    \end{split}
-                    \label{Homogeneous}
-                \end{equation}
+        \subsection{同次座標}
+            座標$(x,y)$に対し，その要素を1つ増やした座標$(\xi_1,\xi_2,\xi_3)$を，以下の関係式を満たすように定義する．\\
+            \begin{equation} % 同次座標の数式
+                \begin{split} % 複数行に1つの式番号を与える
+                    x = \frac{\xi_1}{\xi_3} \\ 
+                    y = \frac{\xi_2}{\xi_3}
+                \end{split}
+                \label{Homogeneous}
+            \end{equation}
 
-                ただし，$\xi_1,\xi_2,\xi_3$のうち少なくとも1つは0ではないとする．このように定義される座標を同次座標と呼ぶ\cite{DIP}．
+            ただし，$\xi_1,\xi_2,\xi_3$のうち少なくとも1つは0ではないとする．このように定義される座標を同次座標と呼ぶ\cite{DIP}．
 
-                同次座標においては$\lambda\neq0$なる任意の$\lambda$に対して，$(\xi_1,\xi_2,\xi_3)$と$(\lambda\xi_1,\lambda\xi_2,\lambda\xi_3)$は通常の座標に直したときともに$(\xi_1/\xi_3,\xi_2/\xi_3)$となるため，同じ点を表している．つまり，同次座標による表現では，定数倍をしても変わらないとみなすことができる．このような表現を同値であるとよび，これを式では以下のように表す．
-                \begin{equation} % 同次座標の数式2
-                    \left(
-                        \begin{array}{ccc}
-                            \xi_1\\
-                            \xi_2\\
-                            \xi_3
-                        \end{array}
-                    \right) \sim % \sim: 「～」
-                    \left(
-                        \begin{array}{ccc}
-                            \lambda\xi_1\\
-                            \lambda\xi_2\\
-                            \lambda\xi_3
-                        \end{array}
-                    \right)
-                \end{equation}
-                ここで記号$\sim$は同値関係を表し，定数倍の違いを許して等しいことを意味する．
+            同次座標においては$\lambda\neq0$なる任意の$\lambda$に対して，$(\xi_1,\xi_2,\xi_3)$と$(\lambda\xi_1,\lambda\xi_2,\lambda\xi_3)$は通常の座標に直したときともに$(\xi_1/\xi_3,\xi_2/\xi_3)$となるため，同じ点を表している．つまり，同次座標による表現では，定数倍をしても変わらないとみなすことができる．このような表現を同値であるとよび，これを式では以下のように表す．
+            \begin{equation} % 同次座標の数式2
+                \left(
+                    \begin{array}{ccc}
+                        \xi_1\\
+                        \xi_2\\
+                        \xi_3
+                    \end{array}
+                \right) \sim % \sim: 「～」
+                \left(
+                    \begin{array}{ccc}
+                        \lambda\xi_1\\
+                        \lambda\xi_2\\
+                        \lambda\xi_3
+                    \end{array}
+                \right)
+            \end{equation}
+            ここで記号$\sim$は同値関係を表し，定数倍の違いを許して等しいことを意味する．
 
                 %! http://www.info.hiroshima-cu.ac.jp/~miyazaki/knowledge/tech0115.html
-            \subsubsection{射影変換}
-                同次座標を利用することにより，一般的な変換を表現することができる．
-                これは以下の式で表現されるもので，射影変換と呼ばれている\cite{DIP}．
-                \begin{equation} % 射影変換の数式
-                    \left(
-                        \begin{array}{ccc}
-                        x'\\
-                        y'\\
-                        1
-                        \end{array}
-                    \right)\sim
-                    \left(
-                        \begin{array}{ccc}
-                        h_{11} & h_{12} & h_{13}\\
-                        h_{21} & h_{22} & h_{23}\\
-                        h_{31} & h_{32} & h_{33}\\
-                        \end{array}
-                    \right)
-                    \left(
-                        \begin{array}{ccc}
-                        x\\
-                        y\\
-                        1
-                        \end{array}
-                    \right)
-                    \label{Homography}
-                \end{equation}
-                あるいは，これをベクトルと行列の記号を用いて，以下のように表現することもできる．
-                \begin{equation} % 射影変換のベクトル数式
-                    \bm{\vec{x}'} \sim \bm{H\vec{x}}
-                \end{equation}
-                $\bm{H}$は任意の$3\times3$の行列である．これを変換行列という．
+        \subsection{射影変換}
+            同次座標を利用することにより，一般的な変換を表現することができる．
+            これは以下の式で表現されるもので，射影変換と呼ばれている\cite{DIP}．
+            \begin{equation} % 射影変換の数式
+                \left(
+                    \begin{array}{ccc}
+                    x'\\
+                    y'\\
+                    1
+                    \end{array}
+                \right)\sim
+                \left(
+                    \begin{array}{ccc}
+                    h_{11} & h_{12} & h_{13}\\
+                    h_{21} & h_{22} & h_{23}\\
+                    h_{31} & h_{32} & h_{33}\\
+                    \end{array}
+                \right)
+                \left(
+                    \begin{array}{ccc}
+                    x\\
+                    y\\
+                    1
+                    \end{array}
+                \right)
+                \label{Homography}
+            \end{equation}
+            あるいは，これをベクトルと行列の記号を用いて，以下のように表現することもできる．
+            \begin{equation} % 射影変換のベクトル数式
+                \bm{\vec{x}'} \sim \bm{H\vec{x}}
+            \end{equation}
+            $\bm{H}$は任意の$3\times3$の行列である．これを変換行列という．
 
-                式(\ref{Homogeneous})の関係を用いて，(\ref{Homography})から座標$(x',y')$を求めると以下のように表すことができる．
-                \begin{equation} % 変換行列を用いてx,yを表現する式
-                    \begin{split} % 複数行に1つの式番号を与える
-                        x' = \frac{h_{11}x+h_{12}y+h_{13}}{h_{31}x+h_{32}y+h_{33}} \\ 
-                        y' = \frac{h_{21}x+h_{22}y+h_{23}}{h_{31}x+h_{32}y+h_{33}} \\ 
-                    \end{split}
-                    \label{transform_XY}
-                \end{equation}
+            式(\ref{Homogeneous})の関係を用いて，(\ref{Homography})から座標$(x',y')$を求めると以下のように表すことができる．
+            \begin{equation} % 変換行列を用いてx,yを表現する式
+                \begin{split} % 複数行に1つの式番号を与える
+                    x' = \frac{h_{11}x+h_{12}y+h_{13}}{h_{31}x+h_{32}y+h_{33}} \\ 
+                    y' = \frac{h_{21}x+h_{22}y+h_{23}}{h_{31}x+h_{32}y+h_{33}} \\ 
+                \end{split}
+                \label{transform_XY}
+            \end{equation}
 
-                一意に射影変換の変換行列を表すため，行列のどれか1つの値を固定する．$h_{33}=1$とし，(\ref{transform_XY})に代入，式変形を行うと$(x',y')$は以下のように表すことができる．
-                \begin{equation} % 変換行列を用いてx,yを表現する式
-                    \begin{split} % 複数行に1つの式番号を与える
-                        xh_{11}+yh_{12}+h_{13}-xx'h_{31}-yx'h_{32} = x'\\ 
-                        xh_{21}+yh_{22}+h_{23}-xy'h_{31}-yy'h_{32} = x'\\ 
-                    \end{split}
-                    \label{transform_XY_ALT}
-                \end{equation}
+            一意に射影変換の変換行列を表すため，行列のどれか1つの値を固定する．$h_{33}=1$とし，(\ref{transform_XY})に代入，式変形を行うと$(x',y')$は以下のように表すことができる．
+            \begin{equation} % 変換行列を用いてx,yを表現する式
+                \begin{split} % 複数行に1つの式番号を与える
+                    xh_{11}+yh_{12}+h_{13}-xx'h_{31}-yx'h_{32} = x'\\ 
+                    xh_{21}+yh_{22}+h_{23}-xy'h_{31}-yy'h_{32} = x'\\ 
+                \end{split}
+                \label{transform_XY_ALT}
+            \end{equation}
 
-                (\ref{transform_XY_ALT})をベクトル演算で表記すると，以下のように表記できる．
-                \footnotesize
-                \begin{equation}
-                    \begin{split}
-                        (x,y,1,0,0,0,-xx',-yx') (h_{11},h_{12},\cdots,h_{31},h_{32})^T \\
-                        (0,0,0,x,y,1,-xy',-yy') (h_{11},h_{12},\cdots,h_{31},h_{32})^T
-                    \end{split}
-                    \label{transform_XY_Vector}
-                \end{equation}
-                \normalsize
+            (\ref{transform_XY_ALT})をベクトル演算で表記すると，以下のように表記できる．
+            \footnotesize
+            \begin{equation}
+                \begin{split}
+                    (x,y,1,0,0,0,-xx',-yx') (h_{11},h_{12},\cdots,h_{31},h_{32})^T \\
+                    (0,0,0,x,y,1,-xy',-yy') (h_{11},h_{12},\cdots,h_{31},h_{32})^T
+                \end{split}
+                \label{transform_XY_Vector}
+            \end{equation}
+            \normalsize
 
-                2つの四角形の頂点座標をそれぞれ
-                $((x_{11},y_{11}),(x_{12},y_{12}),(x_{13},y_{13}),(x_{14},y_{14}))$，$((x_{21},y_{21}),(x_{22},y_{22}),(x_{23},y_{23}),(x_{24},y_{24}))$
-                とすると，すべての頂点を(\ref{transform_XY_Vector})で表すと以下の式になる．
-                \fontsize{7.5pt}{0pt}
-                \begin{equation} % 8*8
-                    \left(
-                    \begin{matrix}
-                        x_{11},y_{11},1,0,0,0,-x_{11}x_{21},-y_{11}x_{21}\\
-                        0,0,0,x_{11},y_{11},1,-x_{11}y_{21},-y_{11}y_{21}\\
-                        x_{12},y_{12},1,0,0,0,-x_{12}x_{22},-y_{12}x_{22}\\
-                        0,0,0,x_{12},y_{12},1,-x_{12}y_{22},-y_{12}y_{22}\\
-                        x_{13},y_{13},1,0,0,0,-x_{13}x_{23},-y_{13}x_{23}\\
-                        0,0,0,x_{13},y_{13},1,-x_{13}y_{23},-y_{13}y_{23}\\
-                        x_{14},y_{14},1,0,0,0,-x_{14}x_{24},-y_{14}x_{24}\\
-                        0,0,0,x_{14},y_{14},1,-x_{14}y_{24},-y_{14}y_{24}\\
-                    \end{matrix}
-                    \right)
-                    \left(
+            2つの四角形の頂点座標をそれぞれ
+            $((x_{11},y_{11}),(x_{12},y_{12}),(x_{13},y_{13}),(x_{14},y_{14}))$，$((x_{21},y_{21}),(x_{22},y_{22}),(x_{23},y_{23}),(x_{24},y_{24}))$
+            とすると，すべての頂点を(\ref{transform_XY_Vector})で表すと以下の式になる．
+            \fontsize{7.5pt}{0pt}
+            \begin{equation} % 8*8
+                \left(
+                \begin{matrix}
+                    x_{11},y_{11},1,0,0,0,-x_{11}x_{21},-y_{11}x_{21}\\
+                    0,0,0,x_{11},y_{11},1,-x_{11}y_{21},-y_{11}y_{21}\\
+                    x_{12},y_{12},1,0,0,0,-x_{12}x_{22},-y_{12}x_{22}\\
+                    0,0,0,x_{12},y_{12},1,-x_{12}y_{22},-y_{12}y_{22}\\
+                    x_{13},y_{13},1,0,0,0,-x_{13}x_{23},-y_{13}x_{23}\\
+                    0,0,0,x_{13},y_{13},1,-x_{13}y_{23},-y_{13}y_{23}\\
+                    x_{14},y_{14},1,0,0,0,-x_{14}x_{24},-y_{14}x_{24}\\
+                    0,0,0,x_{14},y_{14},1,-x_{14}y_{24},-y_{14}y_{24}\\
+                \end{matrix}
+                \right)
+                \left(
+                \begin{matrix}
+                    h_{11}\\
+                    h_{12}\\
+                    h_{13}\\
+                    h_{21}\\
+                    h_{22}\\
+                    h_{23}\\
+                    h_{31}\\
+                    h_{32}\\
+                \end{matrix}
+                \right)
+                =
+                \left(
+                \begin{matrix}
+                    x_{21}\\
+                    y_{21}\\
+                    x_{22}\\
+                    y_{22}\\
+                    x_{23}\\
+                    y_{23}\\
+                    x_{24}\\
+                    y_{24}\\
+                \end{matrix}
+                \right)
+                \label{8x8vector}
+            \end{equation}
+            \normalsize
+            よって，(\ref{8x8vector})の左辺にある$8\times8$行列の逆行列を計算することで，射影変換の変換行列の各要素が求まる\cite{SquareTransform}．
+            \fontsize{6.5pt}{0pt}
+            \begin{equation} % 8*8
+                \left(
                     \begin{matrix}
                         h_{11}\\
                         h_{12}\\
@@ -241,77 +271,46 @@
                         h_{32}\\
                     \end{matrix}
                     \right)
-                    =
-                    \left(
-                    \begin{matrix}
-                        x_{21}\\
-                        y_{21}\\
-                        x_{22}\\
-                        y_{22}\\
-                        x_{23}\\
-                        y_{23}\\
-                        x_{24}\\
-                        y_{24}\\
-                    \end{matrix}
-                    \right)
-                    \label{8x8vector}
-                \end{equation}
-                \normalsize
-                よって，(\ref{8x8vector})の左辺にある$8\times8$行列の逆行列を計算することで，射影変換の変換行列の各要素が求まる\cite{SquareTransform}．
-                \fontsize{6.5pt}{0pt}
-                \begin{equation} % 8*8
-                    \left(
-                        \begin{matrix}
-                            h_{11}\\
-                            h_{12}\\
-                            h_{13}\\
-                            h_{21}\\
-                            h_{22}\\
-                            h_{23}\\
-                            h_{31}\\
-                            h_{32}\\
-                        \end{matrix}
-                        \right)
-                        =    
-                    \left(
-                    \begin{matrix}
-                        x_{11},y_{11},1,0,0,0,-x_{11}x_{21},-y_{11}x_{21}\\
-                        0,0,0,x_{11},y_{11},1,-x_{11}y_{21},-y_{11}y_{21}\\
-                        x_{12},y_{12},1,0,0,0,-x_{12}x_{22},-y_{12}x_{22}\\
-                        0,0,0,x_{12},y_{12},1,-x_{12}y_{22},-y_{12}y_{22}\\
-                        x_{13},y_{13},1,0,0,0,-x_{13}x_{23},-y_{13}x_{23}\\
-                        0,0,0,x_{13},y_{13},1,-x_{13}y_{23},-y_{13}y_{23}\\
-                        x_{14},y_{14},1,0,0,0,-x_{14}x_{24},-y_{14}x_{24}\\
-                        0,0,0,x_{14},y_{14},1,-x_{14}y_{24},-y_{14}y_{24}\\
-                    \end{matrix}
-                    \right)^{-1}
-                    \left(
-                    \begin{matrix}
-                        x_{21}\\
-                        y_{21}\\
-                        x_{22}\\
-                        y_{22}\\
-                        x_{23}\\
-                        y_{23}\\
-                        x_{24}\\
-                        y_{24}\\
-                    \end{matrix}
-                    \right)      
-                    \label{8x8vector_Inverse}
-                \end{equation}
-                \normalsize
+                    =    
+                \left(
+                \begin{matrix}
+                    x_{11},y_{11},1,0,0,0,-x_{11}x_{21},-y_{11}x_{21}\\
+                    0,0,0,x_{11},y_{11},1,-x_{11}y_{21},-y_{11}y_{21}\\
+                    x_{12},y_{12},1,0,0,0,-x_{12}x_{22},-y_{12}x_{22}\\
+                    0,0,0,x_{12},y_{12},1,-x_{12}y_{22},-y_{12}y_{22}\\
+                    x_{13},y_{13},1,0,0,0,-x_{13}x_{23},-y_{13}x_{23}\\
+                    0,0,0,x_{13},y_{13},1,-x_{13}y_{23},-y_{13}y_{23}\\
+                    x_{14},y_{14},1,0,0,0,-x_{14}x_{24},-y_{14}x_{24}\\
+                    0,0,0,x_{14},y_{14},1,-x_{14}y_{24},-y_{14}y_{24}\\
+                \end{matrix}
+                \right)^{-1}
+                \left(
+                \begin{matrix}
+                    x_{21}\\
+                    y_{21}\\
+                    x_{22}\\
+                    y_{22}\\
+                    x_{23}\\
+                    y_{23}\\
+                    x_{24}\\
+                    y_{24}\\
+                \end{matrix}
+                \right)      
+                \label{8x8vector_Inverse}
+            \end{equation}
+            \normalsize
 
-                射影変換においては，線分の直線性は保たれるものの，平行性は失われる．別の言い方をすると，任意の四角形を別の任意の四角形に移すような変換であるといえる．
+            射影変換においては，線分の直線性は保たれるものの，平行性は失われる．別の言い方をすると，任意の四角形を別の任意の四角形に移すような変換であるといえる．
 
-                射影変換の概略図を図\ref{sample_homography}に示す．
+            射影変換の模式図を図\ref{sample_homography}に示す．
 
-                \begin{figure}[tb] % 射影変換の概略図
-                    \begin{center}
-                    \includegraphics[clip,width=90mm]{Homography.jpg} 
-                    \caption{射影変換の概略図}
-                    \label{sample_homography}
-                    \end{center}
-                \end{figure}
+            \begin{figure}[tb] % 射影変換の模式図
+                \begin{center}
+                \includegraphics[clip,width=90mm]{Homography.jpg} 
+                \caption{射影変換の模式図}
+                \label{sample_homography}
+                \end{center}
+            \end{figure}
     
 
         % 2.2
@@ -336,7 +335,7 @@
 
             \begin{figure}[tb] % メディアンフィルタの図
                 \begin{center}
-                \includegraphics[clip,width=90mm]{medianBlur.jpg} 
+                \includegraphics[clip,width=80mm]{medianBlur.jpg} 
                 \caption{メディアンフィルタの例}
                 \label{medianBlur}
                 \end{center}
@@ -365,24 +364,25 @@
                 \end{center}
             \end{figure}
 
-        \subsection{感度・特異度} % 真陽性率
+        \subsection{真陽性率・真陰性率} % 
             % https://jeaweb.jp/files/about_epi_research/contest2016_1_202007.pdf
             % https://bellcurve.jp/statistics/glossary/2014.html （こっちのほうが分かりやすいけど，参考文献には不適切な気がする．）
-        検査で検出したい信号や疾患を有するもののうち，検査が正しく陽性と判断したものの割合のことを感度と呼ぶ．
-        真陽性率（TPF: True Positive Fraction）とも呼ぶ．
+        検査で検出したい信号や疾患を有するもののうち，検査が正しく陽性と判断したものの割合のことを真陽性率（TPF: True Positive Fraction）と呼ぶ．
         この割合が大きいと，検出したい信号を有する対象に対して行った検査が誤って陰性と判断した割合（偽陰性率，FNF）は小さくなる．
         TPFとFNFの関係を以下に示す．
         \begin{align}
             TPF = 1-FNF
         \end{align}
+        本研究では，白色（黒色）の碁石がある座標を，システムが「白石（黒石）がある」と識別した割合を指す．
 
-        また，検査で検出したい信号や疾患を有さないもののうち，検査が正しく陰性と判断したものの割合を特異度と呼ぶ．
-        真陰性率（TNF: True Negative Fraction）とも呼ぶ．
+        また，検査で検出したい信号や疾患を有さないもののうち，検査が正しく陰性と判断したものの割合を真陰性率（TNF: True Negative Fraction）と呼ぶ．
         この割合が大きいと，検出したい信号を有さない対象に対して行った検査が誤って陽性と判断した割合（偽陽性率，FPF）は小さくなる．
         TNFとFPFの関係を以下に示す．
         \begin{align}
             TNF = 1-FPF
         \end{align}
+        本研究では，白色（黒色）の碁石がない座標を，システムが「白石（黒石）がない」と識別した割合を指す．
+
 
 
     \section{盤面識別システム} % セクション．システムについて
@@ -592,7 +592,7 @@
             \subsubsection{事例2} % 位置ズレによる失敗．DSC_0099．
                 石の配置にずれがある状況に対しシステムを適用する．
 
-                この盤面画像（図\ref{ex2}）に対しシステムを適用した．
+                この盤面画像（図\ref{ex2_img}）に対しシステムを適用した．
                 識別結果に誤りがあった部分にマークを付け，その周囲を拡大したものを図\ref{ex2_error}に示す．
 
                 図\ref{ex2_error}の範囲に対し，図\ref{noiseReducedImg}と同様に，輝度値の平均を取得する領域を可視化した画像を図\ref{ex2_error_area}に示す．
@@ -604,30 +604,35 @@
                     \begin{center}
                     \includegraphics[clip,width=60mm]{DSC_0099/boardImg.jpg} 
                     \caption{事例2の盤面}
-                    \label{ex2}
+                    \label{ex2_img}
                     \end{center}
                 \end{figure}
 
-                \begin{figure}[tb] % 事例2_エラー部分の拡大
+                \begin{figure}[tb] % 事例2，誤り部分・領域可視化版の2枚セット
                     \begin{center}
-                    \includegraphics[clip,width=40mm]{DSC_0099/TRIM_resultCompare.jpg} 
-                    \caption{事例2の誤り部分}
-                    \label{ex2_error}
+                      \begin{tabular}{c}
+                        \begin{minipage}{0.5\hsize}
+                          \begin{center}
+                            \includegraphics[clip,width=30mm]{DSC_0099/TRIM_resultCompare.jpg}
+                        \caption{図\ref{ex2_img}の誤り部分}
+                        \label{ex2_error}
+                          \end{center}
+                        \end{minipage}
+                        \begin{minipage}{0.5\hsize}
+                          \begin{center}
+                            \includegraphics[clip,width=30mm]{DSC_0099/TRIM_boardWithAreaImg.jpg}
+                        \caption{誤り部分の領域}
+                        \label{ex2_error_area}
+                          \end{center}
+                        \end{minipage}
+                      \end{tabular}
                     \end{center}
                 \end{figure}
-
-                \begin{figure}[tb] % 事例2_エラー部分の拡大
-                    \begin{center}
-                    \includegraphics[clip,width=40mm]{DSC_0099/TRIM_boardWithAreaImg.jpg} 
-                    \caption{誤り部分の領域を可視化した図}
-                    \label{ex2_error_area}
-                    \end{center}
-                \end{figure}
-
+    
             \subsubsection{事例3} % 反射による失敗．DSC_0098．
                 反射光が映り込んでいる状況に対しシステムを適用する．
 
-                この盤面画像（図\ref{ex3}）に対しシステムを適用した．
+                この盤面画像（図\ref{ex3_img}）に対しシステムを適用した．
                 識別結果に誤りがあった部分にマークを付け，その一部をトリミングしたものを図\ref{ex3_error}に示す．
 
                 図\ref{ex3_error}の範囲に対し，白石の識別に用いた閾値よりも暗い部分を0，明るい部分を1として二値画像を生成すると，白石が無い部分もしきい値以上の明るさであることが分かる．
@@ -636,27 +641,31 @@
                     \begin{center}
                     \includegraphics[clip,width=60mm]{DSC_0098/boardImg.jpg} 
                     \caption{事例3の盤面}
-                    \label{ex3}
+                    \label{ex3_img}
                     \end{center}
                 \end{figure}
 
-                \begin{figure}[tb] % 事例3_エラー部分の拡大
+                \begin{figure}[tb] % 事例3，誤り部分，二値画像の2枚セット
                     \begin{center}
-                    \includegraphics[clip,width=40mm]{DSC_0098/TRIM_resultCompare.jpg} 
-                    \caption{誤り部分の一部}
-                    \label{ex3_error}
+                      \begin{tabular}{c}
+                        \begin{minipage}{0.5\hsize}
+                          \begin{center}
+                            \includegraphics[clip,width=35mm]{DSC_0098/TRIM_resultCompare.jpg}
+                        \caption{図\ref{ex3_img}の誤り部分}
+                        \label{ex3_error}
+                          \end{center}
+                        \end{minipage}
+                        \begin{minipage}{0.5\hsize}
+                          \begin{center}
+                            \includegraphics[clip,width=35mm]{DSC_0098/TRIM_inRange_WHITE.jpg}
+                        \caption{誤り部分の二値化}
+                        \label{ex3_error_area}
+                          \end{center}
+                        \end{minipage}
+                      \end{tabular}
                     \end{center}
                 \end{figure}
-
-                    %TODO: inRange()で，白のしきい値が拾った部分の二値画像を作る
-                \begin{figure}[tb] % 事例3_エラー部分の拡大
-                    \begin{center}
-                    \includegraphics[clip,width=40mm]{DSC_0098/TRIM_inRange_WHITE.jpg} 
-                    \caption{誤り部分をしきい値で二値化した図}
-                    \label{ex3_error_area}
-                    \end{center}
-                \end{figure}
-
+    
     \section{結言}\label{sec:Item} % 結言
         本研究では，囲碁の盤面を含んだ画像から碁石の配置を識別することを目的として，画像上から碁石の配置を識別するシステムの検討を行い，数件の画像に対してシステムを適用して有効性を確認した．
 
