@@ -481,6 +481,7 @@
 
         \subsection{識別}
             \label{area}
+            碁石の識別は，碁石が等間隔で設置されていることを利用して，盤面画像から等間隔で輝度値を取得することで実現できると考えた．% 過去形はどうなんだろう？
             識別の際に，輝度値の平均を取得するための$19\times19$個の小さな領域を付与する．
             \ref{noiseReduce}節で生成した図(図\ref{noiseReducedImg})に対し，各領域を緑色の四角形で表した画像を図\ref{boardWithArea}に示す．
             \begin{figure}[tb] % 領域を可視化した図
@@ -491,7 +492,7 @@
                 \end{center}
             \end{figure}
 
-            与えた領域内における輝度値の平均（0～255）を取得し，白黒それぞれのしきい値をもとに各領域を
+            与えた領域内における輝度値（0～255）の平均を取得し，白黒それぞれのしきい値をもとに各領域を
             \begin{itemize} % 3種類
                 \item 平均値が黒石のしきい値より小さい ＝ 「黒石がある」
                 \item 平均値が白石のしきい値より大きい ＝ 「白石がある」
@@ -620,7 +621,8 @@
                 図\ref{ex2_error}の範囲に対し，図\ref{noiseReducedImg}と同様に，輝度値の平均を取得する領域を可視化した画像を図\ref{ex2_error_area}に示す．
                 図の中央部分を見ると，碁石の大部分が領域からはみ出ているのが分かる．
                 このことから，石が正しく盤面の交点上に配置されていない場合，システムは正常に石を識別できないと考える．
-                
+                %! これをどうすれば解決できるのか書く
+                これは，輝度値を取得する領域の位置を調節することで解決できると考える．
                 
                 \begin{figure}[tb] % 事例2_盤面
                     \begin{center}
@@ -635,14 +637,14 @@
                       \begin{tabular}{c}
                         \begin{minipage}{0.5\hsize}
                           \begin{center}
-                            \includegraphics[clip,width=30mm]{DSC_0099/TRIM_resultCompare.jpg}
+                            \includegraphics[clip,width=30mm]{DSC_0099/resultCompare_trim.jpg}
                         \caption{図\ref{ex2_img}の誤り部分}
                         \label{ex2_error}
                           \end{center}
                         \end{minipage}
                         \begin{minipage}{0.5\hsize}
                           \begin{center}
-                            \includegraphics[clip,width=30mm]{DSC_0099/TRIM_boardWithAreaImg.jpg}
+                            \includegraphics[clip,width=30mm]{DSC_0099/boardWithAreaImg_trim.jpg}
                         \caption{誤り部分の領域}
                         \label{ex2_error_area}
                           \end{center}
@@ -690,11 +692,12 @@
                       \end{tabular}
                     \end{center}
                 \end{figure}
+                %! 反射光誤認の解決法を書く
                 %TODO 反射光の誤認対策は？
                 これは，白石と識別するしきい値を大きくすることで対策できると考える．
                 実際にしきい値を158から190に設定することで，図\ref{ex3_error}の範囲の識別結果を改善することができた．
                 しきい値を大きくした場合の，図\ref{ex3_error}と図\ref{ex3_error_area}と同じ範囲の識別結果を図\ref{ex3_alt}に示す．
-                \begin{figure}[tb] % 事例3_盤面
+                \begin{figure}[tb] % しきい値の拡大結果
                     \begin{center}
                     \includegraphics[clip,width=60mm]{DSC_0098/ALT_result_trim.jpg} 
                     \caption{しきい値を大きくした結果}
@@ -707,7 +710,7 @@
 
         \ref{identify_result}節より，本研究で検討したシステムでは石の位置に大きなずれが無い，かつ反射光が写り込んでいない場合に限り，碁石を正常に識別することができた．
         石のずれに対応できない問題には，画像に付与する領域（碁石座標）の位置を等間隔ではなく，碁盤の交点や石の形状をもとに検出することでこれを解決できると考える．
-        反射光を白石と識別していまう問題には，しきい値を固定するのではなく，画像の状況に応じて最適なしきい値を算出することや，画像上の反射光の写り込みを軽減させるノイズ処理で，誤った識別をする数を減らすことができると考える．
+        反射光を誤って白石と識別する問題には，しきい値を固定するのではなく，画像の状況に応じて最適なしきい値を算出することや，画像上の反射光の写り込みを軽減させるノイズ処理で，誤った識別を減らすことができると考える．
 
         したがって，今後の課題として
         \begin{itemize}
@@ -722,7 +725,6 @@
         %先輩方のを見ると「研究室の同期」への謝辞だったけど，研究室だけじゃなくクラスメイト全体に感謝を示したい．こんな書き方でいいのか？？？
         また，この研究の機会をくださった情報工学科の先生方，そして多くの知識やご指摘を下さいました同級生の皆様に厚く御礼申し上げます．
     
-
     \begin{thebibliography}{10} % 参考文献
 
         % Webサイトの参考文献の書き方が怪しい．確認を取ること！
