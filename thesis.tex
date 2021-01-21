@@ -110,10 +110,10 @@
         \end{figure}
 
             %TODO「なんでこの方法でやろうと思ったのか書けるといいね．」
-        しかし，この手法には，途中から対局を記録しようとした時に，そのターンを記録できない問題が存在する．
+        しかし，この手法では，途中から対局を記録しようとした時に，そのターンを記録できない問題が存在する．
         そこで本研究では，記録しようとした時点のターンから記録できるように，直前の着手の情報を使用せず，1つの着手の画像だけで碁石の位置を検出することを目的とする．
-        また先行研究の手法では，横320$\times$縦240画素のカメラが使用されており，碁石の識別は約1画素の輝度をもとに行われる．
-        本研究では，より高解像度のカメラを使用し，複数の画素の輝度値をもとに碁石の種類の検出を行うことで精度向上を図る．
+        また，先行研究の手法では，横320$\times$縦240画素のカメラが使用されており，碁石の識別は約1画素の輝度をもとに行われる．
+        本研究では，より高解像度のカメラを使用し，一定の領域内に存在する全画素の輝度値をもとに碁石の種類の検出を行うことで精度向上を図る．
 
     \section{理論} % セクション．理論
     \label{config}
@@ -383,8 +383,6 @@
         \end{align}
         本研究では，白色（黒色）の碁石がない座標を，システムが「白石（黒石）がない」と識別した割合を指す．
 
-
-
     \section{碁石識別システム} % セクション．システムについて
     \label{system}
             %TODO この章はもっと書けると思うので，全体的に説明を拡充しましょう！
@@ -443,12 +441,33 @@
         \subsection{グレースケール処理} \label{grayscale}
             白石と黒石の識別にはカラー画像でなくても行うことができると考える．
             そこで，本システムでは碁盤の画像に対しグレースケール処理を適用する．
-        
+            処理結果を図\ref{grayImg}に示す．
+            \begin{figure}[tb] % 事例2，誤り部分・領域可視化版の2枚セット
+                \begin{center}
+                  \begin{tabular}{c}
+                    \begin{minipage}{0.5\hsize}
+                      \begin{center}
+                        \includegraphics[clip,width=35mm]{DSC_0041/GRAYImg.jpg}
+                    \caption{グレースケール処理}
+                    \label{grayImg}
+                      \end{center}
+                    \end{minipage}
+                    \begin{minipage}{0.5\hsize}
+                      \begin{center}
+                        \includegraphics[clip,width=35mm]{DSC_0041/noiseReducedImg.jpg}
+                    \caption{ノイズ除去後の盤面}
+                    \label{noiseReducedImg}
+                      \end{center}
+                    \end{minipage}
+                  \end{tabular}
+                \end{center}
+            \end{figure}
+
 
         \subsection{ノイズ除去} \label{noiseReduce}
             後述する識別の方法では，盤面上の線の交点を誤って黒石と識別してしまうことがある．
             これを減らすため，ノイズ処理を適用することで盤面上の線をある程度無視できるようにする． 
-            \ref{boardCut}節で生成した画像(図\ref{boardImg})に対し，フィルタを用いてノイズ処理を行う．
+            \ref{grayscale}節で生成した画像(図\ref{grayImg})に対し，フィルタを用いてノイズ処理を行う．
             フィルタには，輪郭部分がぼやけにくいといった特徴を持つメディアンフィルタを使用する．
             なぜならば，メディアンフィルタは輪郭部分を残しやすいという特徴を持っているためである．
             たとえば平均値フィルタ（範囲内の画素値の平均を出力するフィルタ）は輪郭も曖昧にしてしまうという特徴がある．
@@ -459,13 +478,6 @@
             これはメディアンフィルタの理論上，偶数のカーネルサイズを与えると中央値が求められないためである．
             今回の実験ではカーネルサイズに25を与えたことで，後に述べる識別で交点を誤って黒石と識別することを防ぐことができた．
             処理結果を図\ref{noiseReducedImg}に示す．
-            \begin{figure}[tb] % ノイズ除去後の盤面
-                \begin{center}
-                \includegraphics[clip,width=60mm]{DSC_0041/noiseReducedImg.jpg} 
-                \caption{ノイズ除去後の盤面}
-                \label{noiseReducedImg}
-                \end{center}
-            \end{figure}
 
         \subsection{識別}
             \label{area}
@@ -486,7 +498,7 @@
                 \item 「それ以外」
             \end{itemize}
             の3種類に分類することで，碁石の識別を行う．
-            盤面の画像（図\ref{boardImg}）上に，実際に識別した結果を重ねた画像を図\ref{result}に示す．
+            盤面のグレースケール画像（図\ref{grayImg}）上に，実際に識別した結果を重ねた画像を図\ref{result}に示す．
             赤色の「$\times$」は黒石を識別した座標，青色の「$\times$」は白石を識別した座標，黄色の「$+$」はそれ以外の座標を意味する．
 
             \begin{figure}[tb] % 領域を可視化した図
@@ -644,13 +656,12 @@
 
                 この盤面画像（図\ref{ex3_img}）に対しシステムを適用した．
                 実際は碁石が設置されておらず，システムが「白石がある」と誤って識別した位置の周囲を緑色の四角形で示す．
-                緑の四角形で囲んだ範囲を拡大し，誤って識別した位置に記号を付与した画像を図\ref{ex2_error}に示す．
+                緑の四角形で囲んだ範囲を拡大し，誤って識別した位置に記号を付与した画像を図\ref{ex3_error}に示す．
 
-
-                実際は碁石が設置されていない位置を，システムが「白石がある」と誤って識別した位置にマークを付け，その一部をトリミングしたものを図\ref{ex3_error}に示す．
-
-                図\ref{ex3_error}の範囲に対し，白石の識別に用いた閾値よりも暗い部分を0，明るい部分を1として二値画像を生成すると，白石が無い部分もしきい値以上の明るさであることが分かる．
+                図\ref{ex3_error}の範囲に対し，白石の識別に用いるしきい値よりも暗い部分を0，明るい部分を1として生成した二値画像を図\ref{ex3_error_area}に示す．
+                これを見ると，白石が無い部分もしきい値以上の明るさであることが分かる．
                 このことから，盤面や黒石に反射光が含まれているとシステムは誤って白石と識別すると考える．
+
                 \begin{figure}[tb] % 事例3_盤面
                     \begin{center}
                     \includegraphics[clip,width=60mm]{DSC_0098/boardImg.jpg} 
@@ -664,14 +675,14 @@
                       \begin{tabular}{c}
                         \begin{minipage}{0.5\hsize}
                           \begin{center}
-                            \includegraphics[clip,width=35mm]{DSC_0098/TRIM_resultCompare.jpg}
+                            \includegraphics[clip,width=35mm]{DSC_0098/resultCompare_trim.jpg}
                         \caption{図\ref{ex3_img}の誤り部分}
                         \label{ex3_error}
                           \end{center}
                         \end{minipage}
                         \begin{minipage}{0.5\hsize}
                           \begin{center}
-                            \includegraphics[clip,width=35mm]{DSC_0098/TRIM_inRange_WHITE.jpg}
+                            \includegraphics[clip,width=35mm]{DSC_0098/inRange_WHITE_trim.jpg}
                         \caption{誤り部分の二値化}
                         \label{ex3_error_area}
                           \end{center}
@@ -679,6 +690,17 @@
                       \end{tabular}
                     \end{center}
                 \end{figure}
+                %TODO 反射光の誤認対策は？
+                これは，白石と識別するしきい値を大きくすることで対策できると考える．
+                実際にしきい値を158から190に設定することで，図\ref{ex3_error}の範囲の識別結果を改善することができた．
+                しきい値を大きくした場合の，図\ref{ex3_error}と図\ref{ex3_error_area}と同じ範囲の識別結果を図\ref{ex3_alt}に示す．
+                \begin{figure}[tb] % 事例3_盤面
+                    \begin{center}
+                    \includegraphics[clip,width=60mm]{DSC_0098/ALT_result_trim.jpg} 
+                    \caption{しきい値を大きくした結果}
+                    \label{ex3_alt}
+                    \end{center}
+                \end{figure}           
     
     \section{結言}\label{sec:Item} % 結言
         本研究では，囲碁の盤面を含んだ画像から碁石の配置を識別することを目的として，画像上から碁石の配置を識別するシステムの検討を行い，数件の画像に対してシステムを適用して有効性を確認した．
